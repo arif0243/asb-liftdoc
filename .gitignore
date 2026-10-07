@@ -46,3 +46,8 @@ next-env.d.ts
 
 /data/quotations.json
 
+
+/data/templates.json
+
+/Backups/
+

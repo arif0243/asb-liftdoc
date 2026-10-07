@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { TemplateBuilderWorkspace } from "@/components/workspace/template-builder-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Templates"
-      description="Manage reusable covers, page layouts, sections, headers, footers and full document templates."
-      actionLabel="New template"
-    />
-  );
+export default function TemplatesPage() {
+  return <TemplateBuilderWorkspace />;
 }
