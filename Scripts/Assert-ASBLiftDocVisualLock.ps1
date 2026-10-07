@@ -1,8 +1,8 @@
-$ErrorActionPreference = "Stop"
-
 param(
     [string]$ProjectRoot = "E:\ASB LiftDoc\asb-liftdoc"
 )
+
+$ErrorActionPreference = "Stop"
 
 $LockPath = Join-Path $ProjectRoot "docs\VISUAL_BASELINE_LOCK.json"
 
