@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { ClientsWorkspace } from "@/components/workspace/clients-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Clients"
-      description="Keep client information, contacts and all related projects and documents together."
-      actionLabel="Add client"
-    />
-  );
+export default function ClientsPage() {
+  return <ClientsWorkspace />;
 }

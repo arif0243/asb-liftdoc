@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { ProjectsWorkspace } from "@/components/workspace/projects-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Projects"
-      description="Organize quotations, revisions, invoices and supporting documents project-wise."
-      actionLabel="Add project"
-    />
-  );
+export default function ProjectsPage() {
+  return <ProjectsWorkspace />;
 }

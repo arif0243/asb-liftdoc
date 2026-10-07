@@ -4,6 +4,7 @@ import {
   Archive,
   Bell,
   BriefcaseBusiness,
+  Building2,
   ChevronRight,
   FileStack,
   FileText,
@@ -24,11 +25,11 @@ import { usePathname } from "next/navigation";
 import {
   ReactNode,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { Brand } from "@/components/brand";
+import type { GlobalSearchResult } from "@/types/workspace";
 
 type NavItem = {
   label: string;
@@ -43,6 +44,7 @@ const navigation: NavItem[] = [
   { label: "Quotations", href: "/quotations", icon: FileText },
   { label: "Bills & Invoices", href: "/invoices", icon: ReceiptText },
   { label: "Documents", href: "/documents", icon: FileStack },
+  { label: "Global Search", href: "/search", icon: Search },
   { label: "Templates", href: "/templates", icon: LayoutTemplate },
   { label: "Products & Services", href: "/products", icon: Package },
 ];
@@ -56,6 +58,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState<GlobalSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,16 +74,41 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  const searchResults = useMemo(() => {
-    const query = searchValue.trim().toLowerCase();
+  useEffect(() => {
+    const query = searchValue.trim();
 
     if (!query) {
-      return [];
+      setSearchResults([]);
+      setSearching(false);
+      return;
     }
 
-    return [...navigation, ...utilityNavigation]
-      .filter((item) => item.label.toLowerCase().includes(query))
-      .slice(0, 6);
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearching(true);
+
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        const data = await response.json();
+        setSearchResults((data.results ?? []).slice(0, 7));
+      } catch {
+        if (!controller.signal.aborted) {
+          setSearchResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setSearching(false);
+        }
+      }
+    }, 180);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, [searchValue]);
 
   const renderNavItem = (item: NavItem) => {
@@ -132,7 +161,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div>
             <strong>Local Workspace</strong>
-            <span>M1 UI Foundation</span>
+            <span>M2 Data Workspace</span>
           </div>
         </div>
       </aside>
@@ -162,30 +191,46 @@ export function AppShell({ children }: { children: ReactNode }) {
 
               {searchValue.trim() && (
                 <div className="search-popover">
-                  <div className="search-popover-title">Global search preview</div>
+                  <div className="search-popover-title">Global search</div>
 
-                  {searchResults.length > 0 ? (
-                    searchResults.map((result) => {
-                      const Icon = result.icon;
-                      return (
-                        <Link
-                          key={result.href}
-                          href={result.href}
-                          className="search-result"
-                          onClick={() => setSearchValue("")}
-                        >
-                          <span className="search-result-icon">
-                            <Icon size={17} />
-                          </span>
-                          <span>{result.label}</span>
-                          <ChevronRight size={16} />
-                        </Link>
-                      );
-                    })
+                  {searching ? (
+                    <div className="search-empty">Searching...</div>
+                  ) : searchResults.length > 0 ? (
+                    <>
+                      {searchResults.map((result) => {
+                        const Icon =
+                          result.type === "client" ? Building2 : FolderKanban;
+
+                        return (
+                          <Link
+                            key={`${result.type}-${result.id}`}
+                            href={result.href}
+                            className="search-result"
+                            onClick={() => setSearchValue("")}
+                          >
+                            <span className="search-result-icon">
+                              <Icon size={17} />
+                            </span>
+                            <span className="search-result-copy">
+                              <strong>{result.title}</strong>
+                              <small>{result.subtitle}</small>
+                            </span>
+                            <ChevronRight size={16} />
+                          </Link>
+                        );
+                      })}
+
+                      <Link
+                        href={`/search?q=${encodeURIComponent(searchValue)}`}
+                        className="search-view-all"
+                        onClick={() => setSearchValue("")}
+                      >
+                        View all search results
+                        <ChevronRight size={15} />
+                      </Link>
+                    </>
                   ) : (
-                    <div className="search-empty">
-                      Real client/project/document data search will be connected in M2.
-                    </div>
+                    <div className="search-empty">No matching workspace data found.</div>
                   )}
                 </div>
               )}

@@ -445,10 +445,6 @@ import {
   readWorkspace,
   updateClient,
 } from "@/lib/workspace-store";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   const data = await readWorkspace();
   return NextResponse.json({ clients: data.clients });
@@ -493,10 +489,6 @@ import {
   readWorkspace,
   updateProject,
 } from "@/lib/workspace-store";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   const data = await readWorkspace();
   return NextResponse.json({
@@ -540,10 +532,6 @@ export async function PUT(request: Request) {
 @'
 import { NextResponse } from "next/server";
 import { searchWorkspace } from "@/lib/workspace-store";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q") ?? "";
@@ -556,10 +544,6 @@ export async function GET(request: Request) {
 @'
 import { NextResponse } from "next/server";
 import { readWorkspace } from "@/lib/workspace-store";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   const data = await readWorkspace();
 
@@ -3220,3 +3204,4 @@ powershell -ExecutionPolicy Bypass -File (Join-Path $ProjectRoot "Start-ASBLiftD
 Write-Host ""
 Write-Host "Run the M2 acceptance test, then send me:" -ForegroundColor Yellow
 Write-Host "'M2 confirmed' if everything works, or a screenshot/error if not." -ForegroundColor Yellow
+
