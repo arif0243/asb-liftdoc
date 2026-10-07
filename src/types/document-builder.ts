@@ -15,13 +15,55 @@ export type DocumentBlockType =
   | "field"
   | "divider"
   | "quotation_table"
+  | "custom_table"
   | "totals";
+
+export type BlockFlowSettings = {
+  pageBreakBefore: boolean;
+  keepTogether: boolean;
+  allowSplit: boolean;
+};
+
+export type QuotationTableSettings = {
+  repeatHeader: boolean;
+  autoPaginate: boolean;
+  rowHeightMm: number;
+};
+
+export type AdvancedTableCell = {
+  id: string;
+  content: string;
+  rowSpan: number;
+  colSpan: number;
+  hidden: boolean;
+  align: "left" | "center" | "right";
+};
+
+export type AdvancedTableRow = {
+  id: string;
+  heightMm: number;
+  cells: AdvancedTableCell[];
+};
+
+export type AdvancedTableConfig = {
+  columnWidths: number[];
+  rows: AdvancedTableRow[];
+  headerRows: number;
+  repeatHeader: boolean;
+  autoPaginate: boolean;
+  borderWidth: number;
+  cellPaddingMm: number;
+  rowsPerPage: number;
+};
 
 export type DocumentBlock = {
   id: string;
   type: DocumentBlockType;
   content: string;
   align: "left" | "center" | "right";
+  flow?: BlockFlowSettings;
+  quotationTable?: QuotationTableSettings;
+  table?: AdvancedTableConfig;
 };
 
 export type PageSettings = {

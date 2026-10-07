@@ -29,6 +29,7 @@ import {
 import type { Client, Project } from "@/types/workspace";
 import type { Quotation } from "@/types/quotation";
 import type {
+  AdvancedTableConfig,
   DocumentBlock,
   DocumentBlockType,
   DocumentTemplate,
@@ -37,6 +38,10 @@ import type {
   ReusableSection,
   TemplatePage,
 } from "@/types/document-builder";
+import {
+  AdvancedTableEditor,
+  createDefaultAdvancedTable,
+} from "@/components/workspace/advanced-table-editor";
 
 type TemplatePayload = {
   templates: DocumentTemplate[];
@@ -64,6 +69,7 @@ function newBlock(type: DocumentBlockType): DocumentBlock {
     field: "{{client.name}}",
     divider: "",
     quotation_table: "",
+    custom_table: "",
     totals: "",
   };
 
@@ -72,6 +78,16 @@ function newBlock(type: DocumentBlockType): DocumentBlock {
     type,
     content: contentByType[type],
     align: "left",
+    flow: {
+      pageBreakBefore: false,
+      keepTogether: false,
+      allowSplit: true,
+    },
+    quotationTable:
+      type === "quotation_table"
+        ? { repeatHeader: true, autoPaginate: true, rowHeightMm: 8.5 }
+        : undefined,
+    table: type === "custom_table" ? createDefaultAdvancedTable() : undefined,
   };
 }
 
@@ -211,6 +227,100 @@ function uploadImage(
   reader.readAsDataURL(file);
 }
 
+function AdvancedTablePreview({
+  table,
+  quotation,
+  client,
+  project,
+}: {
+  table: AdvancedTableConfig;
+  quotation: Quotation | null;
+  client: Client | null;
+  project: Project | null;
+}) {
+  const headerRows = table.rows.slice(0, table.headerRows);
+  const bodyRows = table.rows.slice(table.headerRows);
+  const perPage = Math.max(2, table.rowsPerPage || 18);
+
+  const chunks =
+    table.autoPaginate && bodyRows.length > perPage
+      ? Array.from(
+          { length: Math.ceil(bodyRows.length / perPage) },
+          (_, index) => [
+            ...(table.repeatHeader ? headerRows : index === 0 ? headerRows : []),
+            ...bodyRows.slice(index * perPage, (index + 1) * perPage),
+          ],
+        )
+      : [table.rows];
+
+  const totalWidth = table.columnWidths.reduce(
+    (sum, width) => sum + Number(width || 1),
+    0,
+  );
+
+  return (
+    <div className="m5-advanced-preview-pages">
+      {chunks.map((rows, pageIndex) => (
+        <div className="m5-advanced-preview-page" key={pageIndex}>
+          {pageIndex > 0 && (
+            <div className="m5-continuation-label">
+              Auto continuation page {pageIndex + 1}
+            </div>
+          )}
+
+          <table
+            className="document-advanced-table"
+            style={{ borderWidth: `${table.borderWidth}px` }}
+          >
+            <colgroup>
+              {table.columnWidths.map((width, index) => (
+                <col
+                  key={index}
+                  style={{
+                    width: `${((Number(width) || 1) / totalWidth) * 100}%`,
+                  }}
+                />
+              ))}
+            </colgroup>
+
+            <tbody>
+              {rows.map((row) => (
+                <tr
+                  key={row.id}
+                  style={{ height: `${Math.max(16, row.heightMm * 2.5)}px` }}
+                >
+                  {row.cells.map((cell) => {
+                    if (cell.hidden) return null;
+
+                    return (
+                      <td
+                        key={cell.id}
+                        rowSpan={cell.rowSpan}
+                        colSpan={cell.colSpan}
+                        style={{
+                          textAlign: cell.align,
+                          borderWidth: `${table.borderWidth}px`,
+                          padding: `${Math.max(1, table.cellPaddingMm * 2)}px`,
+                        }}
+                      >
+                        {resolveTokens(
+                          cell.content,
+                          quotation,
+                          client,
+                          project,
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+}
 export function TemplateBuilderWorkspace() {
   const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
   const [sections, setSections] = useState<ReusableSection[]>([]);
@@ -912,6 +1022,18 @@ export function TemplateBuilderWorkspace() {
                           return <hr key={block.id} />;
                         }
 
+                        if (block.type === "custom_table") {
+                          return (
+                            <AdvancedTablePreview
+                              key={block.id}
+                              table={block.table ?? createDefaultAdvancedTable()}
+                              quotation={previewQuotation}
+                              client={previewClient}
+                              project={previewProject}
+                            />
+                          );
+                        }
+
                         if (block.type === "quotation_table") {
                           return (
                             <div className="document-preview-table" key={block.id}>
@@ -1357,6 +1479,22 @@ export function TemplateBuilderWorkspace() {
                   </div>
                 </div>
 
+                <button
+                  type="button"
+                  className="button button-secondary builder-add-custom-table"
+                  onClick={() =>
+                    updatePage({
+                      blocks: [
+                        ...activePage.blocks,
+                        newBlock("custom_table"),
+                      ],
+                    })
+                  }
+                >
+                  <Table2 size={14} />
+                  Add advanced custom table
+                </button>
+
                 <div className="builder-block-list">
                   {activePage.blocks.map((block, index) => (
                     <div className="builder-block-card" key={block.id}>
@@ -1375,6 +1513,9 @@ export function TemplateBuilderWorkspace() {
                           <option value="divider">Divider</option>
                           <option value="quotation_table">
                             Quotation table
+                          </option>
+                          <option value="custom_table">
+                            Advanced custom table
                           </option>
                           <option value="totals">Totals</option>
                         </select>
@@ -1412,7 +1553,116 @@ export function TemplateBuilderWorkspace() {
                         </div>
                       </div>
 
-                      {!["divider", "quotation_table", "totals"].includes(
+                      {block.type === "custom_table" && (
+                        <AdvancedTableEditor
+                          value={block.table}
+                          onChange={(table) =>
+                            updateBlock(block.id, { table })
+                          }
+                        />
+                      )}
+
+                      {block.type === "quotation_table" && (
+                        <div className="m5-table-options">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={block.quotationTable?.autoPaginate ?? true}
+                              onChange={(event) =>
+                                updateBlock(block.id, {
+                                  quotationTable: {
+                                    repeatHeader:
+                                      block.quotationTable?.repeatHeader ?? true,
+                                    rowHeightMm:
+                                      block.quotationTable?.rowHeightMm ?? 8.5,
+                                    autoPaginate: event.target.checked,
+                                  },
+                                })
+                              }
+                            />
+                            Auto paginate long quotation table
+                          </label>
+
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={block.quotationTable?.repeatHeader ?? true}
+                              onChange={(event) =>
+                                updateBlock(block.id, {
+                                  quotationTable: {
+                                    autoPaginate:
+                                      block.quotationTable?.autoPaginate ?? true,
+                                    rowHeightMm:
+                                      block.quotationTable?.rowHeightMm ?? 8.5,
+                                    repeatHeader: event.target.checked,
+                                  },
+                                })
+                              }
+                            />
+                            Repeat table header
+                          </label>
+                        </div>
+                      )}
+
+                      <div className="m5-flow-options">
+                        <strong>Page flow</strong>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={block.flow?.pageBreakBefore ?? false}
+                            onChange={(event) =>
+                              updateBlock(block.id, {
+                                flow: {
+                                  pageBreakBefore: event.target.checked,
+                                  keepTogether:
+                                    block.flow?.keepTogether ?? false,
+                                  allowSplit:
+                                    block.flow?.allowSplit ?? true,
+                                },
+                              })
+                            }
+                          />
+                          Page break before
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={block.flow?.keepTogether ?? false}
+                            onChange={(event) =>
+                              updateBlock(block.id, {
+                                flow: {
+                                  pageBreakBefore:
+                                    block.flow?.pageBreakBefore ?? false,
+                                  keepTogether: event.target.checked,
+                                  allowSplit:
+                                    block.flow?.allowSplit ?? true,
+                                },
+                              })
+                            }
+                          />
+                          Keep together
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={block.flow?.allowSplit ?? true}
+                            onChange={(event) =>
+                              updateBlock(block.id, {
+                                flow: {
+                                  pageBreakBefore:
+                                    block.flow?.pageBreakBefore ?? false,
+                                  keepTogether:
+                                    block.flow?.keepTogether ?? false,
+                                  allowSplit: event.target.checked,
+                                },
+                              })
+                            }
+                          />
+                          Allow split across pages
+                        </label>
+                      </div>
+
+                      {!["divider", "quotation_table", "custom_table", "totals"].includes(
                         block.type,
                       ) && (
                         <>
@@ -1489,3 +1739,4 @@ export function TemplateBuilderWorkspace() {
     </div>
   );
 }
+

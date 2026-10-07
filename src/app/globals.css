@@ -2977,3 +2977,229 @@ select.builder-block-content {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* M5 advanced table + flow controls */
+
+.builder-add-custom-table {
+  width: 100%;
+  margin: 2px 0 10px;
+}
+
+.m5-flow-options,
+.m5-table-options {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--ink-100);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.m5-flow-options strong {
+  color: var(--ink-500);
+  font-size: 8px;
+}
+
+.m5-flow-options label,
+.m5-table-options label,
+.advanced-table-switches label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-600);
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.m5-flow-options input,
+.m5-table-options input,
+.advanced-table-switches input {
+  width: 13px;
+  height: 13px;
+  accent-color: var(--brand-700);
+}
+
+.advanced-table-editor {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #d8e3ed;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.advanced-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.advanced-table-toolbar button {
+  min-height: 26px;
+  padding: 0 7px;
+  border: 1px solid var(--ink-200);
+  border-radius: 6px;
+  color: var(--ink-600);
+  background: var(--surface-soft);
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.advanced-table-message {
+  margin-top: 6px;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--brand-700);
+  background: var(--brand-50);
+  font-size: 7px;
+}
+
+.advanced-table-scroll {
+  overflow: auto;
+  margin-top: 7px;
+  border: 1px solid var(--ink-100);
+  border-radius: 6px;
+}
+
+.advanced-table-edit-table {
+  min-width: 520px;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.advanced-table-edit-table td {
+  min-width: 105px;
+  padding: 4px;
+  vertical-align: top;
+  border: 1px solid var(--ink-200);
+  background: #fff;
+}
+
+.advanced-table-edit-table td.advanced-cell-selected {
+  outline: 2px solid var(--brand-500);
+  outline-offset: -2px;
+  background: var(--brand-50);
+}
+
+.advanced-cell-selector {
+  min-height: 19px;
+  margin-bottom: 3px;
+  padding: 0 5px;
+  border: 1px solid var(--ink-200);
+  border-radius: 4px;
+  color: var(--ink-500);
+  background: var(--surface-soft);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.advanced-table-edit-table textarea,
+.advanced-table-edit-table select {
+  width: 100%;
+  border: 1px solid var(--ink-200);
+  border-radius: 4px;
+  color: var(--ink-700);
+  background: #fff;
+  font-size: 7px;
+}
+
+.advanced-table-edit-table textarea {
+  min-height: 40px;
+  padding: 4px;
+  resize: vertical;
+}
+
+.advanced-table-edit-table select {
+  min-height: 24px;
+  margin-top: 3px;
+}
+
+.advanced-table-settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.advanced-table-settings-grid label > span,
+.advanced-table-dimensions label > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink-500);
+  font-size: 6.5px;
+  font-weight: 750;
+}
+
+.advanced-table-settings-grid input,
+.advanced-table-dimensions input {
+  width: 100%;
+  min-height: 27px;
+  padding: 4px 5px;
+  border: 1px solid var(--ink-200);
+  border-radius: 4px;
+  font-size: 7px;
+}
+
+.advanced-table-switches {
+  display: grid;
+  gap: 5px;
+  margin-top: 7px;
+  padding: 7px;
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
+.advanced-table-dimensions {
+  margin-top: 8px;
+}
+
+.advanced-table-dimensions > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink-500);
+  font-size: 7px;
+}
+
+.advanced-table-dimensions > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.m5-advanced-preview-pages {
+  display: grid;
+  gap: 12px;
+}
+
+.m5-advanced-preview-page {
+  padding: 4px 0;
+}
+
+.m5-continuation-label {
+  margin-bottom: 5px;
+  padding: 4px 6px;
+  border: 1px dashed #b8cee0;
+  border-radius: 5px;
+  color: var(--brand-700);
+  background: var(--brand-50);
+  text-align: center;
+  font-size: 6.5px;
+  font-weight: 800;
+}
+
+.document-advanced-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-style: solid;
+  border-color: #1b2028;
+  font-size: 7px;
+}
+
+.document-advanced-table td {
+  border-style: solid;
+  border-color: #1b2028;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
