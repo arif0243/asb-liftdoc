@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { QuotationsWorkspace } from "@/components/workspace/quotations-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Quotations"
-      description="Create, duplicate, revise and manage flexible multi-page quotations."
-      actionLabel="New quotation"
-    />
-  );
+export default function QuotationsPage() {
+  return <QuotationsWorkspace />;
 }

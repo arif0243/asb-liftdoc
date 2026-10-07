@@ -56,7 +56,7 @@ export function DashboardOverview() {
     {
       label: "Quotations",
       value: stats.quotations,
-      helper: "Quotation engine starts in M3",
+      helper: "Quotation records and revisions",
       icon: FileText,
       href: "/quotations",
     },
@@ -90,13 +90,13 @@ export function DashboardOverview() {
     },
     {
       label: "Duplicate previous",
-      description: "Quotation duplication starts in M3",
+      description: "Reuse a previous quotation",
       icon: Copy,
       href: "/quotations",
     },
     {
       label: "Create quotation",
-      description: "Quotation builder starts in M3",
+      description: "Create a commercial quotation",
       icon: Plus,
       href: "/quotations",
     },
@@ -268,3 +268,4 @@ export function DashboardOverview() {
     </div>
   );
 }
+

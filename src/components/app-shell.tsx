@@ -54,6 +54,18 @@ const utilityNavigation: NavItem[] = [
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
+function ResultIcon({ type }: { type: GlobalSearchResult["type"] }) {
+  if (type === "client") {
+    return <Building2 size={17} />;
+  }
+
+  if (type === "project") {
+    return <FolderKanban size={17} />;
+  }
+
+  return <FileText size={17} />;
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -93,7 +105,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           cache: "no-store",
         });
         const data = await response.json();
-        setSearchResults((data.results ?? []).slice(0, 7));
+        setSearchResults((data.results ?? []).slice(0, 8));
       } catch {
         if (!controller.signal.aborted) {
           setSearchResults([]);
@@ -161,7 +173,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div>
             <strong>Local Workspace</strong>
-            <span>M2 Data Workspace</span>
+            <span>M3 Quotation Engine</span>
           </div>
         </div>
       </aside>
@@ -184,7 +196,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ref={searchRef}
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
-                placeholder="Search clients, projects, quotations, invoices..."
+                placeholder="Search clients, projects, quotations..."
                 aria-label="Global search"
               />
               <span className="search-shortcut">Ctrl K</span>
@@ -197,28 +209,23 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <div className="search-empty">Searching...</div>
                   ) : searchResults.length > 0 ? (
                     <>
-                      {searchResults.map((result) => {
-                        const Icon =
-                          result.type === "client" ? Building2 : FolderKanban;
-
-                        return (
-                          <Link
-                            key={`${result.type}-${result.id}`}
-                            href={result.href}
-                            className="search-result"
-                            onClick={() => setSearchValue("")}
-                          >
-                            <span className="search-result-icon">
-                              <Icon size={17} />
-                            </span>
-                            <span className="search-result-copy">
-                              <strong>{result.title}</strong>
-                              <small>{result.subtitle}</small>
-                            </span>
-                            <ChevronRight size={16} />
-                          </Link>
-                        );
-                      })}
+                      {searchResults.map((result) => (
+                        <Link
+                          key={`${result.type}-${result.id}`}
+                          href={result.href}
+                          className="search-result"
+                          onClick={() => setSearchValue("")}
+                        >
+                          <span className="search-result-icon">
+                            <ResultIcon type={result.type} />
+                          </span>
+                          <span className="search-result-copy">
+                            <strong>{result.title}</strong>
+                            <small>{result.subtitle}</small>
+                          </span>
+                          <ChevronRight size={16} />
+                        </Link>
+                      ))}
 
                       <Link
                         href={`/search?q=${encodeURIComponent(searchValue)}`}
