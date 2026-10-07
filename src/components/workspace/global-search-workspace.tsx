@@ -3,6 +3,7 @@
 import {
   Building2,
   ChevronRight,
+  FileStack,
   FileText,
   FolderKanban,
   Search,
@@ -11,11 +12,17 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { GlobalSearchResult } from "@/types/workspace";
 
-type SearchType = "all" | "client" | "project" | "quotation";
+type SearchType =
+  | "all"
+  | "client"
+  | "project"
+  | "quotation"
+  | "document";
 
 function SearchIcon({ type }: { type: GlobalSearchResult["type"] }) {
   if (type === "client") return <Building2 size={18} />;
   if (type === "project") return <FolderKanban size={18} />;
+  if (type === "document") return <FileStack size={18} />;
   return <FileText size={18} />;
 }
 
@@ -41,10 +48,13 @@ export function GlobalSearchWorkspace() {
       setLoading(true);
 
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
-          signal: controller.signal,
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `/api/search?q=${encodeURIComponent(query)}`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+          },
+        );
         const data = await response.json();
         setResults(data.results ?? []);
       } catch {
@@ -65,7 +75,10 @@ export function GlobalSearchWorkspace() {
   }, [query]);
 
   const filtered = useMemo(
-    () => (type === "all" ? results : results.filter((result) => result.type === type)),
+    () =>
+      type === "all"
+        ? results
+        : results.filter((result) => result.type === type),
     [results, type],
   );
 
@@ -74,6 +87,7 @@ export function GlobalSearchWorkspace() {
     { key: "client", label: "Clients" },
     { key: "project", label: "Projects" },
     { key: "quotation", label: "Quotations" },
+    { key: "document", label: "Documents" },
   ];
 
   return (
@@ -83,8 +97,8 @@ export function GlobalSearchWorkspace() {
           <div className="eyebrow">Full-site data finder</div>
           <h1>Global Search</h1>
           <p>
-            Search client, project and quotation data from one place. Invoice and
-            document content will join this same index in later milestones.
+            Search clients, projects, quotations and saved document instances
+            from one place.
           </p>
         </div>
       </div>
@@ -96,7 +110,7 @@ export function GlobalSearchWorkspace() {
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search client, phone, project, quotation no, item, tag..."
+            placeholder="Search client, project, quotation, document, text..."
           />
         </div>
 

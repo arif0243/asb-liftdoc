@@ -5,6 +5,7 @@ import {
   Copy,
   Edit3,
   FilePlus2,
+  FileStack,
   FileText,
   Plus,
   RefreshCw,
@@ -607,6 +608,19 @@ export function QuotationsWorkspace() {
                   <RotateCcw size={16} />
                   New revision
                 </button>
+
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => {
+                    window.location.href = `/documents?quotation=${encodeURIComponent(
+                      selected.id,
+                    )}`;
+                  }}
+                >
+                  <FileStack size={16} />
+                  Create document
+                </button>
               </div>
             </>
           ) : (
@@ -966,3 +980,4 @@ export function QuotationsWorkspace() {
     </div>
   );
 }
+

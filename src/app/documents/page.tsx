@@ -1,10 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { DocumentsWorkspace } from "@/components/workspace/documents-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Documents"
-      description="Browse quotations, invoices, proposals and future business documents in one place."
-    />
-  );
+export default function DocumentsPage() {
+  return <DocumentsWorkspace />;
 }

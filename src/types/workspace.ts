@@ -37,9 +37,10 @@ export type WorkspaceData = {
 
 export type GlobalSearchResult = {
   id: string;
-  type: "client" | "project" | "quotation";
+  type: "client" | "project" | "quotation" | "document";
   title: string;
   subtitle: string;
   meta: string;
   href: string;
 };
+

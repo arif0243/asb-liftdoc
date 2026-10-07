@@ -3203,3 +3203,335 @@ select.builder-block-content {
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
+
+/* M6 document instance engine */
+
+.document-instance-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.72fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.document-instance-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 130px 40px;
+  gap: 9px;
+  padding: 14px;
+  border-bottom: 1px solid var(--ink-100);
+  background: var(--surface-soft);
+}
+
+.document-instance-toolbar select {
+  min-height: 40px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--ink-200);
+  border-radius: 9px;
+  color: var(--ink-700);
+  background: #fff;
+  font-size: 10px;
+}
+
+.document-instance-grid {
+  grid-template-columns: minmax(210px, 1.25fr) minmax(190px, 1fr) 90px;
+}
+
+.document-instance-detail {
+  min-height: 420px;
+}
+
+.document-instance-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding-top: 15px;
+}
+
+.document-instance-source-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #d7e4ee;
+  border-radius: 9px;
+  color: var(--brand-700);
+  background: var(--brand-50);
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.document-instance-editor-panel {
+  overflow: hidden;
+  border: 1px solid var(--ink-100);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.document-editor-heading {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ink-100);
+  background: var(--surface-soft);
+}
+
+.document-editor-heading h2 {
+  margin: 4px 0 0;
+  color: var(--brand-950);
+  font-size: 15px;
+}
+
+.document-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.document-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 18px;
+  background: #f3f5f8;
+}
+
+.document-preview-card {
+  min-width: 0;
+}
+
+.document-preview-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  color: var(--ink-500);
+  font-size: 8px;
+}
+
+.document-preview-card-top strong {
+  color: var(--ink-700);
+}
+
+.document-instance-paper {
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 34px;
+  background: #fff;
+  border: 1px solid #dfe4ea;
+  box-shadow: 0 12px 36px rgba(12, 31, 55, 0.08);
+}
+
+.document-instance-header,
+.document-instance-footer {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-500);
+  font-size: 7.5px;
+}
+
+.document-instance-header {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.document-instance-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--ink-100);
+}
+
+.document-instance-content {
+  display: grid;
+  gap: 10px;
+  color: #171c24;
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+
+.document-instance-content h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.document-instance-content hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #cfd6dd;
+}
+
+.document-override-layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: 580px;
+}
+
+.document-override-pages {
+  padding: 14px;
+  border-right: 1px solid var(--ink-100);
+  background: var(--surface-soft);
+}
+
+.document-override-pages > label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.document-override-pages label > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink-500);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.document-override-pages input,
+.document-override-pages select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 8px;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink-700);
+  font-size: 9px;
+}
+
+.document-override-page-list {
+  max-height: 380px;
+  overflow: auto;
+  margin-top: 14px;
+}
+
+.document-override-form {
+  padding: 18px;
+}
+
+.document-override-blocks {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.document-override-block {
+  padding: 10px;
+  border: 1px solid var(--ink-100);
+  border-radius: 9px;
+  background: var(--surface-soft);
+}
+
+.document-override-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.document-override-block-head strong {
+  color: var(--brand-800);
+  font-size: 8.5px;
+  text-transform: capitalize;
+}
+
+.document-override-block-head span {
+  color: var(--ink-400);
+  font-size: 7px;
+}
+
+.document-override-block textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 8px;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  color: var(--ink-700);
+  background: #fff;
+  font-size: 9px;
+  resize: vertical;
+}
+
+.document-override-block p {
+  margin: 0;
+  color: var(--ink-400);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.document-create-modal {
+  width: min(650px, 100%);
+}
+
+.document-create-note {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #d8e4ed;
+  border-radius: 8px;
+  color: var(--ink-500);
+  background: var(--surface-soft);
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+
+.document-instance-paper .document-advanced-table td {
+  padding: 4px;
+}
+
+@media (max-width: 1050px) {
+  .document-instance-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .document-preview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .document-instance-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .document-instance-toolbar select,
+  .document-instance-toolbar .icon-button {
+    display: none;
+  }
+
+  .document-instance-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .document-instance-grid > :nth-child(2) {
+    display: none;
+  }
+
+  .document-override-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .document-override-pages {
+    border-right: 0;
+    border-bottom: 1px solid var(--ink-100);
+  }
+
+  .document-instance-paper {
+    min-width: 540px;
+  }
+
+  .document-preview-card {
+    overflow-x: auto;
+  }
+
+  .document-editor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
