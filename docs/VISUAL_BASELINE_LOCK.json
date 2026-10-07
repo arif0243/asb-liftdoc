@@ -1,0 +1,11 @@
+{
+    "name":  "ASB LiftDoc Approved Visual Baseline",
+    "approved_shell_source":  "checkpoint-m3-quotation-engine",
+    "feature_style_source":  "checkpoint-m6-document-instances",
+    "rule":  "Future milestones must not modify these files without explicit user approval.",
+    "files":  {
+                  "src/app/globals.css":  "4CF7E90604141880CF24202FD25C33427844150C3540F5B7511A9674737F7B7C",
+                  "src/components/app-shell.tsx":  "04A764C4E56B995E370C0A7664A66A4C8E54F1B562E4213DAE385833782F4733",
+                  "src/components/workspace/dashboard-overview.tsx":  "1702B4F3F3971143879DB5673596DD1AC7C65D6CFB8E5F0B1DA2545BA46BDDBD"
+              }
+}
