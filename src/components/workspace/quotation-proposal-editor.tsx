@@ -599,7 +599,7 @@ function fallback(
       preparedByLogoLockRatio: true,
       preparedByLogoAspectRatio: 2.25,
       preparedByAddress: "",
-      preparedByAddressFontSizePt: 20,
+      preparedByAddressFontSizePt: 12,
       preparedByAddressColor: "#000000",
       submissionDate: "",
     },
@@ -2073,14 +2073,10 @@ export function QuotationProposalEditor() {
                 <div className="asb-address-style-grid">
                   <label>
                     <span>Address Font Size (pt)</span>
-                    <input
-                      type="number"
-                      min="8"
-                      max="40"
-                      step="1"
+                    <select
                       value={
                         proposal.cover
-                          .preparedByAddressFontSizePt ?? 20
+                          .preparedByAddressFontSizePt ?? 12
                       }
                       onChange={(event) =>
                         setProposal(
@@ -2089,18 +2085,23 @@ export function QuotationProposalEditor() {
                             cover: {
                               ...current.cover,
                               preparedByAddressFontSizePt:
-                                Math.max(
-                                  8,
-                                  Math.min(
-                                    40,
-                                    Number(event.target.value) || 20,
-                                  ),
-                                ),
+                                Number(event.target.value),
                             },
                           }),
                         )
                       }
-                    />
+                    >
+                      {[8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40].map(
+                        (size) => (
+                          <option
+                            key={size}
+                            value={size}
+                          >
+                            {size} pt
+                          </option>
+                        ),
+                      )}
+                    </select>
                   </label>
 
                   <label>

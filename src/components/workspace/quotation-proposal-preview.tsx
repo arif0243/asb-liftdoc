@@ -1114,7 +1114,7 @@ export function QuotationProposalPreview() {
                         style={{
                           fontSize: `${
                             proposal.cover
-                              .preparedByAddressFontSizePt ?? 20
+                              .preparedByAddressFontSizePt ?? 12
                           }pt`,
                           color:
                             proposal.cover
