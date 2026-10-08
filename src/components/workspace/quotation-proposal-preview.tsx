@@ -1110,7 +1110,20 @@ export function QuotationProposalPreview() {
                           "ASB Lift"}
                       </strong>
 
-                      <p>
+                      <p
+                        style={{
+                          fontSize: `${
+                            proposal.cover
+                              .preparedByAddressFontSizePt ?? 20
+                          }pt`,
+                          color:
+                            proposal.cover
+                              .preparedByAddressColor ?? "#000000",
+                          fontFamily:
+                            '"Times New Roman", Times, serif',
+                          textAlign: "center",
+                        }}
+                      >
                         {
                           proposal.cover
                             .preparedByAddress

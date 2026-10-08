@@ -56,6 +56,8 @@ export function defaultQuotationProposal(
       preparedByLogoLockRatio: true,
       preparedByLogoAspectRatio: 2.25,
       preparedByAddress: "",
+      preparedByAddressFontSizePt: 20,
+      preparedByAddressColor: "#000000",
       submissionDate: "",
     },
 
@@ -418,6 +420,16 @@ export async function saveQuotationProposal(
         input.cover?.preparedByAddress,
         "",
       ),
+      preparedByAddressFontSizePt:
+        Number(input.cover?.preparedByAddressFontSizePt) >= 8 &&
+        Number(input.cover?.preparedByAddressFontSizePt) <= 40
+          ? Number(input.cover?.preparedByAddressFontSizePt)
+          : fallback.cover.preparedByAddressFontSizePt ?? 20,
+      preparedByAddressColor:
+        typeof input.cover?.preparedByAddressColor === "string" &&
+        /^#[0-9A-Fa-f]{6}$/.test(input.cover.preparedByAddressColor)
+          ? input.cover.preparedByAddressColor
+          : fallback.cover.preparedByAddressColor ?? "#000000",
       submissionDate: stringValue(
         input.cover?.submissionDate,
         "",

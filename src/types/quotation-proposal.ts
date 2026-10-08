@@ -37,6 +37,8 @@ export type QuotationProposalCover = {
   preparedByLogoLockRatio: boolean;
   preparedByLogoAspectRatio: number;
   preparedByAddress: string;
+  preparedByAddressFontSizePt?: number;
+  preparedByAddressColor?: string;
   submissionDate: string;
 };
 

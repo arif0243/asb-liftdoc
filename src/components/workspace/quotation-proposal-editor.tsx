@@ -282,6 +282,43 @@ const CSS = `
   font-size: 7.5px;
 }
 
+.asb-address-style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.asb-color-control {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 7px;
+  align-items: center;
+}
+
+.asb-color-control input[type="color"] {
+  min-height: 36px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.asb-address-suggestion {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px;
+  align-items: end;
+}
+
+.asb-address-suggestion button {
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid #ccd8e1;
+  border-radius: 7px;
+  color: #294258;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .asb-info {
   padding: 10px;
   border: 1px solid #d8e2ea;
@@ -562,6 +599,8 @@ function fallback(
       preparedByLogoLockRatio: true,
       preparedByLogoAspectRatio: 2.25,
       preparedByAddress: "",
+      preparedByAddressFontSizePt: 20,
+      preparedByAddressColor: "#000000",
       submissionDate: "",
     },
 
@@ -2010,7 +2049,7 @@ export function QuotationProposalEditor() {
                     Prepared By Address
                   </span>
                   <textarea
-                    rows={3}
+                    rows={4}
                     value={
                       proposal.cover
                         .preparedByAddress
@@ -2030,6 +2069,150 @@ export function QuotationProposalEditor() {
                     }
                   />
                 </label>
+
+                <div className="asb-address-style-grid">
+                  <label>
+                    <span>Address Font Size (pt)</span>
+                    <input
+                      type="number"
+                      min="8"
+                      max="40"
+                      step="1"
+                      value={
+                        proposal.cover
+                          .preparedByAddressFontSizePt ?? 20
+                      }
+                      onChange={(event) =>
+                        setProposal(
+                          (current) => ({
+                            ...current,
+                            cover: {
+                              ...current.cover,
+                              preparedByAddressFontSizePt:
+                                Math.max(
+                                  8,
+                                  Math.min(
+                                    40,
+                                    Number(event.target.value) || 20,
+                                  ),
+                                ),
+                            },
+                          }),
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    <span>Address Text Color</span>
+                    <div className="asb-color-control">
+                      <input
+                        type="color"
+                        value={
+                          proposal.cover
+                            .preparedByAddressColor ?? "#000000"
+                        }
+                        onChange={(event) =>
+                          setProposal(
+                            (current) => ({
+                              ...current,
+                              cover: {
+                                ...current.cover,
+                                preparedByAddressColor:
+                                  event.target.value,
+                              },
+                            }),
+                          )
+                        }
+                      />
+
+                      <input
+                        value={
+                          proposal.cover
+                            .preparedByAddressColor ?? "#000000"
+                        }
+                        onChange={(event) => {
+                          const value =
+                            event.target.value;
+
+                          if (
+                            /^#[0-9A-Fa-f]{6}$/.test(
+                              value,
+                            )
+                          ) {
+                            setProposal(
+                              (current) => ({
+                                ...current,
+                                cover: {
+                                  ...current.cover,
+                                  preparedByAddressColor:
+                                    value,
+                                },
+                              }),
+                            );
+                          }
+                        }}
+                      />
+                    </div>
+                  </label>
+                </div>
+
+                <div className="asb-address-suggestion">
+                  <label>
+                    <span>Prepared By Address Suggestion</span>
+                    <select
+                      defaultValue=""
+                      onChange={(event) => {
+                        const value =
+                          event.target.value;
+
+                        if (!value) return;
+
+                        setProposal(
+                          (current) => ({
+                            ...current,
+                            cover: {
+                              ...current.cover,
+                              preparedByAddress:
+                                value,
+                            },
+                          }),
+                        );
+
+                        event.target.value = "";
+                      }}
+                    >
+                      <option value="">
+                        Select suggestion...
+                      </option>
+
+                      <option value="House: 80/3/C, Block-G, Road-6, Rampura Banasree, Dhaka-1219">
+                        ASB Office Address
+                      </option>
+
+                      <option value={"House: 80/3/C, Block-G, Road-6\nRampura Banasree, Dhaka-1219\nPhone: +880960162352, 01991111011\nE-mail: asbengineering2010@gmail.com"}>
+                        ASB Full Contact Block
+                      </option>
+                    </select>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setProposal(
+                        (current) => ({
+                          ...current,
+                          cover: {
+                            ...current.cover,
+                            preparedByAddress: "",
+                          },
+                        }),
+                      )
+                    }
+                  >
+                    Clear
+                  </button>
+                </div>
 
                 <label>
                   <span>Submission Date</span>
