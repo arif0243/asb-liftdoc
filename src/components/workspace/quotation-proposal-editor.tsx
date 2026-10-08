@@ -1141,7 +1141,7 @@ export function QuotationProposalEditor() {
       <header className="asb-editor-top">
         <div className="asb-editor-title">
           <span>
-            {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
+            {quotation.quotationNo} - Rev{" "}
             {quotation.revisionNo}
           </span>
           <h1>Proposal Editor</h1>
@@ -2250,8 +2250,7 @@ export function QuotationProposalEditor() {
                 Full Proposal Preview
               </strong>
               <span>
-                Cover ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Letter ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Price
-                Page(s) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Terms
+                Cover / Letter / Price Page(s) / Terms
               </span>
             </div>
           </div>
