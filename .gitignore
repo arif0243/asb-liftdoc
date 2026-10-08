@@ -60,3 +60,6 @@ next-env.d.ts
 
 /data/quotation-layouts.json
 
+
+/data/quotation-proposals.json
+

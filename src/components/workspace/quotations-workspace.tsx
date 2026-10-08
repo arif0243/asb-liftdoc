@@ -30,6 +30,8 @@ import type {
 
 import actionStyles from "./quotation-actions.module.css";
 
+import proposalActionStyles from "./quotation-proposal-actions.module.css";
+
 type FormItem = {
   id: string;
   description: string;
@@ -456,7 +458,7 @@ export function QuotationsWorkspace() {
                   >
                     <span className="record-primary">
                       <strong>
-                        {quotation.quotationNo} · Rev {quotation.revisionNo}
+                        {quotation.quotationNo} Â· Rev {quotation.revisionNo}
                       </strong>
                       <small>{quotation.title}</small>
                     </span>
@@ -490,16 +492,20 @@ export function QuotationsWorkspace() {
                   <span className="panel-kicker">Quotation</span>
                   <h2>{selected.quotationNo}</h2>
                   <p>
-                    Revision {selected.revisionNo} · {selected.status}
+                    Revision {selected.revisionNo} Â· {selected.status}
                   </p>
                 </div>
 
-                <div className={actionStyles.detailActions}>
+                <div className={proposalActionStyles.actions}>
                   <button
                     type="button"
-                    className={actionStyles.actionButton}
-                    onClick={() => openEdit(selected)}
-                    aria-label="Edit quotation"
+                    onClick={() => {
+                      window.location.href =
+                        `/quotations/proposal?id=${encodeURIComponent(
+                          selected.id,
+                        )}`;
+                    }}
+                    aria-label="Edit quotation proposal"
                   >
                     <Edit3 size={15} />
                     Edit
@@ -507,18 +513,16 @@ export function QuotationsWorkspace() {
 
                   <button
                     type="button"
-                    className={actionStyles.actionButton}
                     onClick={() =>
                       window.open(
-                        `/quotations/preview?id=${encodeURIComponent(
+                        `/quotations/proposal/preview?id=${encodeURIComponent(
                           selected.id,
                         )}`,
                         "_blank",
                       )
                     }
-                    aria-label="Preview quotation"
+                    aria-label="Preview quotation proposal"
                   >
-                    <Eye size={15} />
                     Preview
                   </button>
                 </div>
@@ -563,7 +567,7 @@ export function QuotationsWorkspace() {
                         <span>
                           <strong>{item.description}</strong>
                           <small>
-                            {item.quantity} {item.unit || "unit"} × {money.format(item.rate)}
+                            {item.quantity} {item.unit || "unit"} Ã— {money.format(item.rate)}
                           </small>
                         </span>
                         <strong>{money.format(item.total)}</strong>
