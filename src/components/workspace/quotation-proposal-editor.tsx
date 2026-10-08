@@ -635,7 +635,7 @@ export function QuotationProposalEditor() {
 
           <div>
             <span>
-              {quotation.quotationNo} Ã‚Â· Rev{" "}
+              {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
               {quotation.revisionNo}
             </span>
             <h1>Proposal Editor</h1>
@@ -643,16 +643,21 @@ export function QuotationProposalEditor() {
         </div>
 
         <div className={styles.actions}>
-          <a
-            href={`/quotations/proposal/preview?id=${encodeURIComponent(
-              quotation.id,
-            )}`}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={() =>
+              window.open(
+                `/quotations/proposal/preview?id=${encodeURIComponent(
+                  quotation.id,
+                )}`,
+                "asbQuotationPreview",
+                "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes",
+              )
+            }
           >
             <Eye size={14} />
             Print preview
-          </a>
+          </button>
 
           <button
             type="button"
@@ -1483,8 +1488,8 @@ export function QuotationProposalEditor() {
               Live multi-page preview
             </strong>
             <span>
-              Cover Ã¢â€ â€™ Letter Ã¢â€ â€™ Price
-              Page(s) Ã¢â€ â€™ Terms
+              Cover ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Letter ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Price
+              Page(s) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Terms
             </span>
           </div>
 

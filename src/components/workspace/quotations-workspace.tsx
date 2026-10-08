@@ -458,7 +458,7 @@ export function QuotationsWorkspace() {
                   >
                     <span className="record-primary">
                       <strong>
-                        {quotation.quotationNo} Â· Rev {quotation.revisionNo}
+                        {quotation.quotationNo} Ã‚Â· Rev {quotation.revisionNo}
                       </strong>
                       <small>{quotation.title}</small>
                     </span>
@@ -492,7 +492,7 @@ export function QuotationsWorkspace() {
                   <span className="panel-kicker">Quotation</span>
                   <h2>{selected.quotationNo}</h2>
                   <p>
-                    Revision {selected.revisionNo} Â· {selected.status}
+                    Revision {selected.revisionNo} Ã‚Â· {selected.status}
                   </p>
                 </div>
 
@@ -567,7 +567,7 @@ export function QuotationsWorkspace() {
                         <span>
                           <strong>{item.description}</strong>
                           <small>
-                            {item.quantity} {item.unit || "unit"} Ã— {money.format(item.rate)}
+                            {item.quantity} {item.unit || "unit"} Ãƒâ€” {money.format(item.rate)}
                           </small>
                         </span>
                         <strong>{money.format(item.total)}</strong>
