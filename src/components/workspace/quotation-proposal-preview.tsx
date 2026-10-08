@@ -808,11 +808,11 @@ export function QuotationProposalPreview() {
 
           <div className="asb-q-toolbar-title">
             <strong>
-              {quotation.quotationNo} · Rev{" "}
+              {quotation.quotationNo} Â· Rev{" "}
               {quotation.revisionNo}
             </strong>
             <span>
-              Full Proposal Preview ·{" "}
+              Full Proposal Preview Â·{" "}
               {pages.length} pages
             </span>
           </div>
@@ -823,21 +823,27 @@ export function QuotationProposalPreview() {
             type="button"
             className="asb-q-btn"
             onClick={() => {
+              const editUrl =
+                `/quotations/proposal?id=${encodeURIComponent(
+                  quotation.id,
+                )}`;
+
               if (
                 window.opener &&
                 !window.opener.closed
               ) {
-                window.opener.location.href =
-                  `/quotations/proposal?id=${encodeURIComponent(
-                    quotation.id,
-                  )}`;
-                window.opener.focus();
-              } else {
-                window.location.href =
-                  `/quotations/proposal?id=${encodeURIComponent(
-                    quotation.id,
-                  )}`;
+                try {
+                  window.opener.location.assign(editUrl);
+                  window.opener.focus();
+                  window.close();
+                  return;
+                } catch {
+                  window.location.assign(editUrl);
+                  return;
+                }
               }
+
+              window.location.assign(editUrl);
             }}
           >
             <Edit3 size={14} />
