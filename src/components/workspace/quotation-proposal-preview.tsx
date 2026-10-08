@@ -815,11 +815,11 @@ export function QuotationProposalPreview() {
 
           <div className="asb-q-toolbar-title">
             <strong>
-              {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
+              {quotation.quotationNo} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Rev{" "}
               {quotation.revisionNo}
             </strong>
             <span>
-              Full Proposal Preview Ãƒâ€šÃ‚Â·{" "}
+              Full Proposal Preview ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
               {pages.length} pages
             </span>
           </div>
@@ -938,6 +938,12 @@ export function QuotationProposalPreview() {
                           className="asb-q-cover-logo"
                           src={proposal.cover.preparedForLogoData}
                           alt="Prepared For logo"
+                          style={{
+                            width: `${proposal.cover.preparedForLogoWidthMm || 45}mm`,
+                            height: `${proposal.cover.preparedForLogoHeightMm || 20}mm`,
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                          }}
                         />
                       )}
 
@@ -957,6 +963,12 @@ export function QuotationProposalPreview() {
                           className="asb-q-cover-logo"
                           src={proposal.cover.preparedByLogoData}
                           alt="Prepared By logo"
+                          style={{
+                            width: `${proposal.cover.preparedByLogoWidthMm || 45}mm`,
+                            height: `${proposal.cover.preparedByLogoHeightMm || 20}mm`,
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                          }}
                         />
                       )}
 

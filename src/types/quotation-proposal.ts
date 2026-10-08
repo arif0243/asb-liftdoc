@@ -20,9 +20,17 @@ export type QuotationProposalCover = {
   proposalTitle: string;
   preparedFor: string;
   preparedForLogoData: string;
+  preparedForLogoWidthMm: number;
+  preparedForLogoHeightMm: number;
+  preparedForLogoLockRatio: boolean;
+  preparedForLogoAspectRatio: number;
   preparedForAddress: string;
   preparedBy: string;
   preparedByLogoData: string;
+  preparedByLogoWidthMm: number;
+  preparedByLogoHeightMm: number;
+  preparedByLogoLockRatio: boolean;
+  preparedByLogoAspectRatio: number;
   preparedByAddress: string;
   submissionDate: string;
 };

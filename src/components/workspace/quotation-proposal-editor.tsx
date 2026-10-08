@@ -234,6 +234,34 @@ const CSS = `
   background: #fff;
 }
 
+.asb-logo-size-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.asb-logo-ratio-row {
+  display: flex !important;
+  align-items: center;
+  gap: 7px !important;
+  margin-top: 8px;
+  color: #40586d;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.asb-logo-ratio-row input {
+  width: auto;
+  min-height: auto;
+}
+
+.asb-logo-size-note {
+  margin-top: 5px;
+  color: #82909b;
+  font-size: 7.5px;
+}
+
 .asb-info {
   padding: 10px;
   border: 1px solid #d8e2ea;
@@ -421,9 +449,17 @@ function fallback(
       proposalTitle: "Financial Proposal",
       preparedFor: "",
       preparedForLogoData: "",
+      preparedForLogoWidthMm: 45,
+      preparedForLogoHeightMm: 20,
+      preparedForLogoLockRatio: true,
+      preparedForLogoAspectRatio: 2.25,
       preparedForAddress: "",
       preparedBy: "ASB Lift",
       preparedByLogoData: "",
+      preparedByLogoWidthMm: 45,
+      preparedByLogoHeightMm: 20,
+      preparedByLogoLockRatio: true,
+      preparedByLogoAspectRatio: 2.25,
       preparedByAddress: "",
       submissionDate: "",
     },
@@ -764,7 +800,6 @@ export function QuotationProposalEditor() {
 
     return keys;
   }, [pricePageCount]);
-
   const uploadCoverLogo = (
     field:
       | "preparedForLogoData"
@@ -778,20 +813,202 @@ export function QuotationProposalEditor() {
     const reader = new FileReader();
 
     reader.onload = () => {
-      setProposal((current) => ({
-        ...current,
-        cover: {
-          ...current.cover,
-          [field]:
-            typeof reader.result === "string"
-              ? reader.result
-              : "",
-        },
-      }));
+      const data =
+        typeof reader.result === "string"
+          ? reader.result
+          : "";
+
+      if (!data) return;
+
+      const image = new Image();
+
+      image.onload = () => {
+        const ratio =
+          image.naturalWidth > 0 &&
+          image.naturalHeight > 0
+            ? image.naturalWidth /
+              image.naturalHeight
+            : 2.25;
+
+        const widthMm = 45;
+        const heightMm = Math.max(
+          5,
+          Math.min(
+            45,
+            Math.round(
+              (widthMm / ratio) * 10,
+            ) / 10,
+          ),
+        );
+
+        setProposal((current) => {
+          if (
+            field ===
+            "preparedForLogoData"
+          ) {
+            return {
+              ...current,
+              cover: {
+                ...current.cover,
+                preparedForLogoData:
+                  data,
+                preparedForLogoWidthMm:
+                  widthMm,
+                preparedForLogoHeightMm:
+                  heightMm,
+                preparedForLogoLockRatio:
+                  true,
+                preparedForLogoAspectRatio:
+                  ratio,
+              },
+            };
+          }
+
+          return {
+            ...current,
+            cover: {
+              ...current.cover,
+              preparedByLogoData: data,
+              preparedByLogoWidthMm:
+                widthMm,
+              preparedByLogoHeightMm:
+                heightMm,
+              preparedByLogoLockRatio:
+                true,
+              preparedByLogoAspectRatio:
+                ratio,
+            },
+          };
+        });
+      };
+
+      image.src = data;
     };
 
     reader.readAsDataURL(file);
     event.target.value = "";
+  };
+
+  const updateCoverLogoSize = (
+    target: "preparedFor" | "preparedBy",
+    dimension: "width" | "height",
+    value: number,
+  ) => {
+    const safeValue = Math.max(
+      dimension === "width" ? 10 : 5,
+      Math.min(
+        dimension === "width" ? 100 : 60,
+        Number(value) || 0,
+      ),
+    );
+
+    setProposal((current) => {
+      const cover = current.cover;
+
+      if (target === "preparedFor") {
+        const ratio =
+          Number(
+            cover.preparedForLogoAspectRatio,
+          ) > 0
+            ? Number(
+                cover.preparedForLogoAspectRatio,
+              )
+            : 1;
+
+        if (
+          cover.preparedForLogoLockRatio
+        ) {
+          return {
+            ...current,
+            cover: {
+              ...cover,
+              preparedForLogoWidthMm:
+                dimension === "width"
+                  ? safeValue
+                  : Math.round(
+                      safeValue *
+                        ratio *
+                        10,
+                    ) / 10,
+              preparedForLogoHeightMm:
+                dimension === "height"
+                  ? safeValue
+                  : Math.round(
+                      (safeValue /
+                        ratio) *
+                        10,
+                    ) / 10,
+            },
+          };
+        }
+
+        return {
+          ...current,
+          cover: {
+            ...cover,
+            preparedForLogoWidthMm:
+              dimension === "width"
+                ? safeValue
+                : cover.preparedForLogoWidthMm,
+            preparedForLogoHeightMm:
+              dimension === "height"
+                ? safeValue
+                : cover.preparedForLogoHeightMm,
+          },
+        };
+      }
+
+      const ratio =
+        Number(
+          cover.preparedByLogoAspectRatio,
+        ) > 0
+          ? Number(
+              cover.preparedByLogoAspectRatio,
+            )
+          : 1;
+
+      if (
+        cover.preparedByLogoLockRatio
+      ) {
+        return {
+          ...current,
+          cover: {
+            ...cover,
+            preparedByLogoWidthMm:
+              dimension === "width"
+                ? safeValue
+                : Math.round(
+                    safeValue *
+                      ratio *
+                      10,
+                  ) / 10,
+            preparedByLogoHeightMm:
+              dimension === "height"
+                ? safeValue
+                : Math.round(
+                    (safeValue /
+                      ratio) *
+                      10,
+                  ) / 10,
+          },
+        };
+      }
+
+      return {
+        ...current,
+        cover: {
+          ...cover,
+          preparedByLogoWidthMm:
+            dimension === "width"
+              ? safeValue
+              : cover.preparedByLogoWidthMm,
+          preparedByLogoHeightMm:
+            dimension === "height"
+              ? safeValue
+              : cover.preparedByLogoHeightMm,
+        },
+      };
+    });
   };
 
   const save = async () => {
@@ -892,7 +1109,7 @@ export function QuotationProposalEditor() {
       <header className="asb-editor-top">
         <div className="asb-editor-title">
           <span>
-            {quotation.quotationNo} Â· Rev{" "}
+            {quotation.quotationNo} Ã‚Â· Rev{" "}
             {quotation.revisionNo}
           </span>
           <h1>Proposal Editor</h1>
@@ -1051,6 +1268,10 @@ export function QuotationProposalEditor() {
                               cover: {
                                 ...current.cover,
                                 preparedForLogoData: "",
+      preparedForLogoWidthMm: 45,
+      preparedForLogoHeightMm: 20,
+      preparedForLogoLockRatio: true,
+      preparedForLogoAspectRatio: 2.25,
                               },
                             }))
                           }
@@ -1060,6 +1281,96 @@ export function QuotationProposalEditor() {
                       </>
                     )}
                   </div>
+
+                  {proposal.cover.preparedForLogoData && (
+                    <>
+                      <div
+                        style={{
+                          marginTop: 8,
+                          color: "#294258",
+                          fontSize: 8,
+                          fontWeight: 800,
+                        }}
+                      >
+                        Prepared For Logo Size
+                      </div>
+
+                      <div className="asb-logo-size-grid">
+                        <label>
+                          <span>Width (mm)</span>
+                          <input
+                            type="number"
+                            min="10"
+                            max="100"
+                            step="1"
+                            value={
+                              proposal.cover
+                                .preparedForLogoWidthMm
+                            }
+                            onChange={(event) =>
+                              updateCoverLogoSize(
+                                "preparedFor",
+                                "width",
+                                Number(
+                                  event.target.value,
+                                ),
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          <span>Height (mm)</span>
+                          <input
+                            type="number"
+                            min="5"
+                            max="60"
+                            step="1"
+                            value={
+                              proposal.cover
+                                .preparedForLogoHeightMm
+                            }
+                            onChange={(event) =>
+                              updateCoverLogoSize(
+                                "preparedFor",
+                                "height",
+                                Number(
+                                  event.target.value,
+                                ),
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+
+                      <label className="asb-logo-ratio-row">
+                        <input
+                          type="checkbox"
+                          checked={
+                            proposal.cover
+                              .preparedForLogoLockRatio
+                          }
+                          onChange={(event) =>
+                            setProposal(
+                              (current) => ({
+                                ...current,
+                                cover: {
+                                  ...current.cover,
+                                  preparedForLogoLockRatio:
+                                    event.target.checked,
+                                },
+                              }),
+                            )
+                          }
+                        />
+                        Lock aspect ratio
+                      </label>
+
+                      <div className="asb-logo-size-note">
+                        Locked: changing width automatically changes height, and vice versa.
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <label>
@@ -1150,6 +1461,10 @@ export function QuotationProposalEditor() {
                               cover: {
                                 ...current.cover,
                                 preparedByLogoData: "",
+      preparedByLogoWidthMm: 45,
+      preparedByLogoHeightMm: 20,
+      preparedByLogoLockRatio: true,
+      preparedByLogoAspectRatio: 2.25,
                               },
                             }))
                           }
@@ -1159,6 +1474,96 @@ export function QuotationProposalEditor() {
                       </>
                     )}
                   </div>
+
+                  {proposal.cover.preparedByLogoData && (
+                    <>
+                      <div
+                        style={{
+                          marginTop: 8,
+                          color: "#294258",
+                          fontSize: 8,
+                          fontWeight: 800,
+                        }}
+                      >
+                        Prepared By Logo Size
+                      </div>
+
+                      <div className="asb-logo-size-grid">
+                        <label>
+                          <span>Width (mm)</span>
+                          <input
+                            type="number"
+                            min="10"
+                            max="100"
+                            step="1"
+                            value={
+                              proposal.cover
+                                .preparedByLogoWidthMm
+                            }
+                            onChange={(event) =>
+                              updateCoverLogoSize(
+                                "preparedBy",
+                                "width",
+                                Number(
+                                  event.target.value,
+                                ),
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          <span>Height (mm)</span>
+                          <input
+                            type="number"
+                            min="5"
+                            max="60"
+                            step="1"
+                            value={
+                              proposal.cover
+                                .preparedByLogoHeightMm
+                            }
+                            onChange={(event) =>
+                              updateCoverLogoSize(
+                                "preparedBy",
+                                "height",
+                                Number(
+                                  event.target.value,
+                                ),
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+
+                      <label className="asb-logo-ratio-row">
+                        <input
+                          type="checkbox"
+                          checked={
+                            proposal.cover
+                              .preparedByLogoLockRatio
+                          }
+                          onChange={(event) =>
+                            setProposal(
+                              (current) => ({
+                                ...current,
+                                cover: {
+                                  ...current.cover,
+                                  preparedByLogoLockRatio:
+                                    event.target.checked,
+                                },
+                              }),
+                            )
+                          }
+                        />
+                        Lock aspect ratio
+                      </label>
+
+                      <div className="asb-logo-size-note">
+                        Locked: changing width automatically changes height, and vice versa.
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <label>
@@ -1805,8 +2210,8 @@ export function QuotationProposalEditor() {
                 Full Proposal Preview
               </strong>
               <span>
-                Cover â†’ Letter â†’ Price
-                Page(s) â†’ Terms
+                Cover Ã¢â€ â€™ Letter Ã¢â€ â€™ Price
+                Page(s) Ã¢â€ â€™ Terms
               </span>
             </div>
           </div>

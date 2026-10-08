@@ -44,9 +44,17 @@ export function defaultQuotationProposal(
       proposalTitle: title || "Financial Proposal",
       preparedFor: "",
       preparedForLogoData: "",
+      preparedForLogoWidthMm: 45,
+      preparedForLogoHeightMm: 20,
+      preparedForLogoLockRatio: true,
+      preparedForLogoAspectRatio: 2.25,
       preparedForAddress: "",
       preparedBy: "ASB Lift",
       preparedByLogoData: "",
+      preparedByLogoWidthMm: 45,
+      preparedByLogoHeightMm: 20,
+      preparedByLogoLockRatio: true,
+      preparedByLogoAspectRatio: 2.25,
       preparedByAddress: "",
       submissionDate: "",
     },
@@ -312,6 +320,22 @@ export async function saveQuotationProposal(
         input.cover?.preparedForLogoData,
         "",
       ),
+      preparedForLogoWidthMm:
+        Number(input.cover?.preparedForLogoWidthMm) > 0
+          ? Number(input.cover?.preparedForLogoWidthMm)
+          : fallback.cover.preparedForLogoWidthMm,
+      preparedForLogoHeightMm:
+        Number(input.cover?.preparedForLogoHeightMm) > 0
+          ? Number(input.cover?.preparedForLogoHeightMm)
+          : fallback.cover.preparedForLogoHeightMm,
+      preparedForLogoLockRatio:
+        input.cover?.preparedForLogoLockRatio === undefined
+          ? fallback.cover.preparedForLogoLockRatio
+          : Boolean(input.cover?.preparedForLogoLockRatio),
+      preparedForLogoAspectRatio:
+        Number(input.cover?.preparedForLogoAspectRatio) > 0
+          ? Number(input.cover?.preparedForLogoAspectRatio)
+          : fallback.cover.preparedForLogoAspectRatio,
       preparedForAddress: stringValue(
         input.cover?.preparedForAddress,
         "",
@@ -324,6 +348,22 @@ export async function saveQuotationProposal(
         input.cover?.preparedByLogoData,
         "",
       ),
+      preparedByLogoWidthMm:
+        Number(input.cover?.preparedByLogoWidthMm) > 0
+          ? Number(input.cover?.preparedByLogoWidthMm)
+          : fallback.cover.preparedByLogoWidthMm,
+      preparedByLogoHeightMm:
+        Number(input.cover?.preparedByLogoHeightMm) > 0
+          ? Number(input.cover?.preparedByLogoHeightMm)
+          : fallback.cover.preparedByLogoHeightMm,
+      preparedByLogoLockRatio:
+        input.cover?.preparedByLogoLockRatio === undefined
+          ? fallback.cover.preparedByLogoLockRatio
+          : Boolean(input.cover?.preparedByLogoLockRatio),
+      preparedByLogoAspectRatio:
+        Number(input.cover?.preparedByLogoAspectRatio) > 0
+          ? Number(input.cover?.preparedByLogoAspectRatio)
+          : fallback.cover.preparedByLogoAspectRatio,
       preparedByAddress: stringValue(
         input.cover?.preparedByAddress,
         "",
