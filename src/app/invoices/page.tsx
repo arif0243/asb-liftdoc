@@ -1,11 +1,5 @@
-﻿import { ModulePlaceholder } from "@/components/module-placeholder";
+﻿import { InvoicesWorkspace } from "@/components/workspace/invoices-workspace";
 
-export default function Page() {
-  return (
-    <ModulePlaceholder
-      title="Bills & Invoices"
-      description="Create bills and invoices directly or convert them from approved quotations."
-      actionLabel="New invoice"
-    />
-  );
+export default function InvoicesPage() {
+  return <InvoicesWorkspace />;
 }
