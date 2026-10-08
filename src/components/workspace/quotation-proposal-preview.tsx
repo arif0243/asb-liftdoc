@@ -861,6 +861,172 @@ function Chrome({
   );
 }
 
+function printQuotationOnly() {
+  const source =
+    document.querySelector<HTMLElement>(
+      ".asb-q-stage",
+    ) ??
+    document.querySelector<HTMLElement>(
+      ".asb-q-pages",
+    );
+
+  if (!source) {
+    throw new Error(
+      "Quotation pages were not found for printing.",
+    );
+  }
+
+  const printWindow = window.open(
+    "",
+    "_blank",
+    "width=980,height=900,resizable=yes,scrollbars=yes",
+  );
+
+  if (!printWindow) {
+    throw new Error(
+      "The print window was blocked by the browser.",
+    );
+  }
+
+  const inheritedStyles = Array.from(
+    document.querySelectorAll(
+      'style, link[rel="stylesheet"]',
+    ),
+  )
+    .map((node) => node.outerHTML)
+    .join("\n");
+
+  printWindow.document.open();
+
+  printWindow.document.write(`<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ASB LiftDoc - Quotation</title>
+${inheritedStyles}
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  body {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .asb-q-toolbar {
+    display: none !important;
+  }
+
+  .asb-q-stage,
+  .asb-q-pages {
+    display: block !important;
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .asb-q-page {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+
+    transform-origin: top left !important;
+
+    break-before: auto !important;
+    page-break-before: auto !important;
+
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  .asb-q-page:first-child {
+    margin-top: 0 !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+
+  .asb-q-page:last-child {
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  @media print {
+    html,
+    body,
+    .asb-q-stage,
+    .asb-q-pages {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .asb-q-page:first-child {
+      break-before: auto !important;
+      page-break-before: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+${source.outerHTML}
+</body>
+</html>`);
+
+  printWindow.document.close();
+
+  const startPrint = () => {
+    printWindow.focus();
+
+    window.setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  if (
+    printWindow.document.readyState ===
+    "complete"
+  ) {
+    startPrint();
+  } else {
+    printWindow.addEventListener(
+      "load",
+      startPrint,
+      { once: true },
+    );
+  }
+
+  printWindow.addEventListener(
+    "afterprint",
+    () => {
+      printWindow.close();
+    },
+    { once: true },
+  );
+}
 export function QuotationProposalPreview() {
   const searchParams = useSearchParams();
 
@@ -1079,7 +1245,7 @@ export function QuotationProposalPreview() {
             <button
               type="button"
               className="asb-q-btn asb-q-btn-primary"
-              onClick={() => window.print()}
+              onClick={() => printQuotationOnly()}
             >
               <Printer size={14} />
               Print / Save PDF
