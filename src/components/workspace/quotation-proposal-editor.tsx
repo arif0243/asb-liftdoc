@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  ArrowLeft,
   Eye,
   Save,
-  Upload,
 } from "lucide-react";
 import {
   ChangeEvent,
@@ -23,204 +21,7 @@ import type {
   ProposalPageChromeOverride,
   QuotationProposal,
 } from "@/types/quotation-proposal";
-import {
-  buildProposalPages,
-  QuotationProposalRenderer,
-} from "@/components/workspace/quotation-proposal-renderer";
-import styles from "./quotation-proposal-editor.module.css";
 
-const EDITOR_FALLBACK_CSS = `
-.${styles.page}{display:grid;gap:14px}
-.${styles.heading}{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-}
-.${styles.heading}>div{
-  display:flex;
-  align-items:center;
-  gap:13px;
-}
-.${styles.heading} a,
-.${styles.actions} a,
-.${styles.actions} button{
-  min-height:34px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:7px 10px;
-  border:1px solid #ccd8e1;
-  border-radius:8px;
-  color:#294258;
-  background:#fff;
-  text-decoration:none;
-  font-size:9px;
-  font-weight:800;
-  cursor:pointer;
-}
-.${styles.heading} span{
-  color:#718391;
-  font-size:8px;
-  font-weight:800;
-}
-.${styles.heading} h1{
-  margin:3px 0 0;
-  color:#173047;
-  font-size:22px;
-}
-.${styles.actions}{display:flex;gap:8px}
-.${styles.actions} button{
-  color:#fff;
-  border-color:#153e62;
-  background:#153e62;
-}
-.${styles.workspace}{
-  display:grid;
-  grid-template-columns:minmax(400px,520px) minmax(0,1fr);
-  gap:15px;
-  align-items:start;
-}
-.${styles.editor}{
-  min-width:0;
-  overflow:hidden;
-  border:1px solid #dbe4eb;
-  border-radius:13px;
-  background:#fff;
-}
-.${styles.tabs}{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  border-bottom:1px solid #dce4eb;
-  background:#f8fafc;
-}
-.${styles.tabs} button{
-  min-height:44px;
-  padding:7px;
-  border:0;
-  border-right:1px solid #e3e9ee;
-  color:#66798a;
-  background:transparent;
-  font-size:7.5px;
-  font-weight:800;
-  cursor:pointer;
-}
-.${styles.activeTab}{
-  color:#153e62!important;
-  background:#fff!important;
-  box-shadow:inset 0 -2px #153e62;
-}
-.${styles.panel}{
-  max-height:calc(100vh - 205px);
-  overflow-y:auto;
-  display:grid;
-  gap:11px;
-  padding:14px;
-}
-.${styles.panel} h2{
-  margin:0 0 2px;
-  color:#173047;
-  font-size:14px;
-}
-.${styles.panel} label,
-.${styles.chromeCard} label{
-  display:grid;
-  gap:5px;
-}
-.${styles.panel} label>span,
-.${styles.chromeCard} label>span{
-  color:#65798a;
-  font-size:8px;
-  font-weight:800;
-}
-.${styles.panel} input,
-.${styles.panel} select,
-.${styles.panel} textarea,
-.${styles.chromeCard} input,
-.${styles.chromeCard} select,
-.${styles.chromeCard} textarea{
-  width:100%;
-  min-height:36px;
-  padding:8px;
-  border:1px solid #ccd7e0;
-  border-radius:7px;
-  box-sizing:border-box;
-  color:#263f55;
-  background:#fff;
-  font-size:9px;
-}
-.${styles.grid3}{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-.${styles.infoBox}{
-  padding:10px;
-  border:1px solid #d8e2ea;
-  border-radius:8px;
-  color:#5f7282;
-  background:#f7fafc;
-  font-size:8px;
-  line-height:1.5;
-}
-.${styles.chromeCard}{
-  display:grid;
-  gap:9px;
-  padding:11px;
-  border:1px solid #dce5ec;
-  border-radius:9px;
-  background:#f8fafc;
-}
-.${styles.preview}{
-  min-width:0;
-  overflow:hidden;
-  border:1px solid #d8e1e8;
-  border-radius:13px;
-  background:#e9edf1;
-}
-.${styles.previewTitle}{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 12px;
-  border-bottom:1px solid #d6dee5;
-  background:#f8fafc;
-}
-.${styles.previewScale}{
-  max-height:calc(100vh - 205px);
-  overflow:auto;
-  padding:20px;
-}
-.${styles.previewScale}>div{zoom:.55}
-.${styles.items}{display:grid;gap:5px}
-.${styles.items}>div{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  padding:7px 8px;
-  border:1px solid #e1e7ed;
-  border-radius:7px;
-  font-size:8px;
-}
-.${styles.overrideChecks}{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-.${styles.loading}{
-  min-height:300px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#718291;
-}
-@media(max-width:1200px){
-  .${styles.workspace}{grid-template-columns:1fr}
-  .${styles.panel},
-  .${styles.previewScale}{max-height:none}
-}
-`;
 type Payload = {
   quotations: Quotation[];
   clients: Client[];
@@ -232,7 +33,319 @@ type Tab =
   | "letter"
   | "price"
   | "terms"
-  | "chrome";
+  | "headerFooter";
+
+const CSS = `
+.asb-editor {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.asb-editor-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.asb-editor-title span {
+  display: block;
+  color: #738493;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.asb-editor-title h1 {
+  margin: 3px 0 0;
+  color: #173047;
+  font-size: 22px;
+}
+
+.asb-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.asb-btn {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid #ccd8e1;
+  border-radius: 8px;
+  color: #294258;
+  background: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-btn-primary {
+  border-color: #153e62;
+  color: #fff;
+  background: #153e62;
+}
+
+.asb-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(430px, 520px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.asb-editor-left {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #dbe4eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.asb-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid #dce4eb;
+  background: #f7f9fb;
+}
+
+.asb-tabs button {
+  min-height: 46px;
+  padding: 7px 5px;
+  border: 0;
+  border-right: 1px solid #e2e8ee;
+  color: #6a7d8d;
+  background: transparent;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-tabs button:last-child {
+  border-right: 0;
+}
+
+.asb-tabs button.active {
+  color: #153e62;
+  background: #fff;
+  box-shadow: inset 0 -2px #153e62;
+}
+
+.asb-panel {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+  display: grid;
+  gap: 11px;
+  padding: 14px;
+}
+
+.asb-panel h2 {
+  margin: 0 0 2px;
+  color: #173047;
+  font-size: 14px;
+}
+
+.asb-panel label {
+  display: grid;
+  gap: 5px;
+}
+
+.asb-panel label > span {
+  color: #65798a;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.asb-panel input,
+.asb-panel select,
+.asb-panel textarea {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 9px;
+  border: 1px solid #ccd7e0;
+  border-radius: 7px;
+  box-sizing: border-box;
+  color: #263f55;
+  background: #fff;
+  font-size: 9px;
+  outline: none;
+}
+
+.asb-panel textarea {
+  resize: vertical;
+}
+
+.asb-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.asb-info {
+  padding: 10px;
+  border: 1px solid #d8e2ea;
+  border-radius: 8px;
+  color: #5f7282;
+  background: #f7fafc;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.asb-items {
+  display: grid;
+  gap: 5px;
+}
+
+.asb-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e0e7ed;
+  border-radius: 7px;
+  color: #465f72;
+  font-size: 8px;
+}
+
+.asb-editor-right {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #d8e1e8;
+  border-radius: 12px;
+  background: #e8edf1;
+}
+
+.asb-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #d5dee5;
+  background: #fff;
+}
+
+.asb-preview-head strong {
+  color: #294258;
+  font-size: 9px;
+}
+
+.asb-preview-head span {
+  color: #758592;
+  font-size: 8px;
+}
+
+.asb-preview-frame {
+  width: 100%;
+  height: calc(100vh - 220px);
+  min-height: 620px;
+  display: block;
+  border: 0;
+  background: #e8edf1;
+}
+
+.asb-chrome-card {
+  display: grid;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid #dce5ec;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.asb-chrome-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #294258;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.asb-upload input {
+  display: none;
+}
+
+.asb-upload {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-flex !important;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 6px !important;
+  padding: 7px 9px;
+  border: 1px solid #ccd8e1;
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.asb-upload-preview {
+  width: 100%;
+  max-height: 110px;
+  object-fit: contain;
+  border: 1px solid #dde5eb;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.asb-check {
+  display: flex !important;
+  align-items: center;
+  gap: 7px !important;
+  padding: 8px;
+  border: 1px solid #dce5ec;
+  border-radius: 7px;
+  background: #fff;
+  color: #40586d;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.asb-check input {
+  width: auto;
+  min-height: auto;
+}
+
+.asb-loading {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c7d8a;
+}
+
+@media (max-width: 1200px) {
+  .asb-editor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .asb-panel {
+    max-height: none;
+  }
+
+  .asb-preview-frame {
+    height: 760px;
+  }
+}
+
+@media (max-width: 700px) {
+  .asb-editor-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .asb-tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .asb-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+`;
 
 function chrome(
   text = "",
@@ -252,6 +365,7 @@ function fallback(
 ): QuotationProposal {
   return {
     quotationId,
+
     cover: {
       proposalTitle: "Financial Proposal",
       preparedFor: "",
@@ -260,6 +374,7 @@ function fallback(
       preparedByAddress: "",
       submissionDate: "",
     },
+
     letter: {
       toDesignation: "President/Secretary",
       subject: "Financial Proposal",
@@ -272,6 +387,7 @@ function fallback(
       signerDesignation: "",
       signerCompany: "ASB Lift",
     },
+
     terms: {
       validity:
         "10 (Ten) days from the date of submission.",
@@ -287,6 +403,7 @@ function fallback(
       signerDesignation: "",
       signerCompany: "ASB Lift",
     },
+
     defaultHeader: chrome("ASB Lift", 18),
     defaultFooter: chrome("", 13),
     pageOverrides: {},
@@ -300,7 +417,7 @@ type ChromeEditorProps = {
   title: string;
   block: ProposalChromeBlock;
   onChange: (
-    value: ProposalChromeBlock,
+    block: ProposalChromeBlock,
   ) => void;
 };
 
@@ -333,13 +450,13 @@ function ChromeEditor({
   };
 
   return (
-    <div className={styles.chromeCard}>
-      <div className={styles.cardTitle}>
+    <section className="asb-chrome-card">
+      <div className="asb-chrome-title">
         <strong>{title}</strong>
         <span>{block.heightMm} mm</span>
       </div>
 
-      <div className={styles.grid3}>
+      <div className="asb-grid-3">
         <label>
           <span>Mode</span>
           <select
@@ -410,9 +527,8 @@ function ChromeEditor({
       )}
 
       {block.mode === "image" && (
-        <div className={styles.imageArea}>
-          <label className={styles.upload}>
-            <Upload size={14} />
+        <>
+          <label className="asb-upload">
             Upload image
             <input
               type="file"
@@ -423,55 +539,71 @@ function ChromeEditor({
 
           {block.imageData && (
             <img
+              className="asb-upload-preview"
               src={block.imageData}
               alt=""
             />
           )}
-        </div>
+        </>
       )}
-    </div>
+    </section>
   );
 }
 
 export function QuotationProposalEditor() {
   const searchParams = useSearchParams();
-  const quotationId = searchParams.get("id") ?? "";
+  const quotationId =
+    searchParams.get("id") ?? "";
+
   const [payload, setPayload] =
     useState<Payload | null>(null);
+
   const [proposal, setProposal] =
     useState<QuotationProposal>(() =>
-      fallback(""),
+      fallback(quotationId),
     );
+
   const [tab, setTab] =
     useState<Tab>("cover");
-  const [chromePageKey, setChromePageKey] =
-    useState("all");
+
   const [saving, setSaving] =
     useState(false);
+
   const [loading, setLoading] =
     useState(true);
 
+  const [previewVersion, setPreviewVersion] =
+    useState(0);
+
+  const [pageOverrideKey, setPageOverrideKey] =
+    useState("cover");
+
   useEffect(() => {
-    if (!quotationId) return;
+    if (!quotationId) {
+      setLoading(false);
+      return;
+    }
 
     let active = true;
 
     void (async () => {
       try {
-        const [quotationResponse, proposalResponse] =
-          await Promise.all([
-            fetch("/api/quotations", {
+        const [
+          quotationResponse,
+          proposalResponse,
+        ] = await Promise.all([
+          fetch("/api/quotations", {
+            cache: "no-store",
+          }),
+          fetch(
+            `/api/quotation-proposals?quotationId=${encodeURIComponent(
+              quotationId,
+            )}`,
+            {
               cache: "no-store",
-            }),
-            fetch(
-              `/api/quotation-proposals?quotationId=${encodeURIComponent(
-                quotationId,
-              )}`,
-              {
-                cache: "no-store",
-              },
-            ),
-          ]);
+            },
+          ),
+        ]);
 
         const quotationPayload =
           (await quotationResponse.json()) as Payload;
@@ -528,16 +660,57 @@ export function QuotationProposalEditor() {
     [payload, quotation],
   );
 
-  const pageDescriptors = useMemo(
-    () =>
-      quotation
-        ? buildProposalPages(
-            quotation,
-            proposal,
-          )
-        : [],
-    [quotation, proposal],
-  );
+  const pricePageCount = useMemo(() => {
+    if (!quotation) return 1;
+
+    return Math.max(
+      1,
+      Math.ceil(
+        quotation.items.length /
+          Math.max(
+            5,
+            Number(
+              proposal.priceRowsPerPage,
+            ) || 12,
+          ),
+      ),
+    );
+  }, [
+    quotation,
+    proposal.priceRowsPerPage,
+  ]);
+
+  const generatedPageKeys = useMemo(() => {
+    const keys = [
+      {
+        key: "cover",
+        label: "Page 1 - Cover",
+      },
+      {
+        key: "letter",
+        label:
+          "Page 2 - Application Letter",
+      },
+    ];
+
+    for (
+      let index = 0;
+      index < pricePageCount;
+      index += 1
+    ) {
+      keys.push({
+        key: `price-${index + 1}`,
+        label: `Price Page ${index + 1}`,
+      });
+    }
+
+    keys.push({
+      key: "terms",
+      label: "Last Page - Terms",
+    });
+
+    return keys;
+  }, [pricePageCount]);
 
   const save = async () => {
     if (!quotationId) return;
@@ -570,6 +743,10 @@ export function QuotationProposalEditor() {
       }
 
       setProposal(result.proposal);
+
+      setPreviewVersion(
+        (current) => current + 1,
+      );
     } catch (error) {
       window.alert(
         error instanceof Error
@@ -581,9 +758,28 @@ export function QuotationProposalEditor() {
     }
   };
 
-  const override: ProposalPageChromeOverride =
+  if (loading) {
+    return (
+      <div className="asb-loading">
+        <style>{CSS}</style>
+        Loading proposal editor...
+      </div>
+    );
+  }
+
+  if (!quotation || !payload) {
+    return (
+      <div className="asb-loading">
+        <style>{CSS}</style>
+        Quotation not found.
+      </div>
+    );
+  }
+
+  const currentOverride:
+    ProposalPageChromeOverride =
     proposal.pageOverrides[
-      chromePageKey
+      pageOverrideKey
     ] ?? {
       useHeader: false,
       useFooter: false,
@@ -595,56 +791,35 @@ export function QuotationProposalEditor() {
       },
     };
 
-  const setOverride = (
+  const updateOverride = (
     next: ProposalPageChromeOverride,
   ) => {
     setProposal((current) => ({
       ...current,
       pageOverrides: {
         ...current.pageOverrides,
-        [chromePageKey]: next,
+        [pageOverrideKey]: next,
       },
     }));
   };
 
-  if (loading) {
-    return (
-      <div className={styles.loading}>
-        Loading proposal editor...
-      </div>
-    );
-  }
-
-  if (!quotation || !payload) {
-    return (
-      <div className={styles.loading}>
-        Quotation not found.
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.page}>
-      <style>{EDITOR_FALLBACK_CSS}</style>
-      <header className={styles.heading}>
-        <div>
-          <a href="/quotations">
-            <ArrowLeft size={14} />
-            Quotations
-          </a>
+    <div className="asb-editor">
+      <style>{CSS}</style>
 
-          <div>
-            <span>
-              {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
-              {quotation.revisionNo}
-            </span>
-            <h1>Proposal Editor</h1>
-          </div>
+      <header className="asb-editor-top">
+        <div className="asb-editor-title">
+          <span>
+            {quotation.quotationNo} · Rev{" "}
+            {quotation.revisionNo}
+          </span>
+          <h1>Proposal Editor</h1>
         </div>
 
-        <div className={styles.actions}>
+        <div className="asb-editor-actions">
           <button
             type="button"
+            className="asb-btn"
             onClick={() =>
               window.open(
                 `/quotations/proposal/preview?id=${encodeURIComponent(
@@ -656,11 +831,12 @@ export function QuotationProposalEditor() {
             }
           >
             <Eye size={14} />
-            Print preview
+            Preview
           </button>
 
           <button
             type="button"
+            className="asb-btn asb-btn-primary"
             onClick={() => void save()}
             disabled={saving}
           >
@@ -670,23 +846,24 @@ export function QuotationProposalEditor() {
         </div>
       </header>
 
-      <div className={styles.workspace}>
-        <section className={styles.editor}>
-          <nav className={styles.tabs}>
+      <div className="asb-editor-layout">
+        <section className="asb-editor-left">
+          <nav className="asb-tabs">
             {[
               ["cover", "Cover"],
-              ["letter", "Application Letter"],
-              ["price", "Price Details"],
-              ["terms", "Terms & Payment"],
-              ["chrome", "Header & Footer"],
+              ["letter", "Letter"],
+              ["price", "Price"],
+              ["terms", "Terms"],
+              [
+                "headerFooter",
+                "Header/Footer",
+              ],
             ].map(([key, label]) => (
               <button
                 key={key}
                 type="button"
                 className={
-                  tab === key
-                    ? styles.activeTab
-                    : ""
+                  tab === key ? "active" : ""
                 }
                 onClick={() =>
                   setTab(key as Tab)
@@ -697,13 +874,15 @@ export function QuotationProposalEditor() {
             ))}
           </nav>
 
-          <div className={styles.panel}>
+          <div className="asb-panel">
             {tab === "cover" && (
               <>
-                <h2>Page 1 - Proposal / Cover</h2>
+                <h2>
+                  Page 1 - Proposal / Cover
+                </h2>
 
                 <label>
-                  <span>Proposal title</span>
+                  <span>Proposal Title</span>
                   <input
                     value={
                       proposal.cover
@@ -734,6 +913,7 @@ export function QuotationProposalEditor() {
                     }
                     placeholder={
                       project?.name ||
+                      quotation.title ||
                       client?.name ||
                       ""
                     }
@@ -860,8 +1040,7 @@ export function QuotationProposalEditor() {
             {tab === "letter" && (
               <>
                 <h2>
-                  Page 2 - Application /
-                  Proposal Letter
+                  Page 2 - Application Letter
                 </h2>
 
                 <label>
@@ -933,7 +1112,7 @@ export function QuotationProposalEditor() {
                 </label>
 
                 <label>
-                  <span>Proposal body</span>
+                  <span>Letter Body</span>
                   <textarea
                     rows={7}
                     value={
@@ -957,7 +1136,7 @@ export function QuotationProposalEditor() {
 
                 <label>
                   <span>
-                    Technical heading
+                    Technical Heading
                   </span>
                   <input
                     value={
@@ -982,7 +1161,7 @@ export function QuotationProposalEditor() {
 
                 <label>
                   <span>
-                    Technical details
+                    Technical Details
                   </span>
                   <textarea
                     rows={6}
@@ -1006,9 +1185,9 @@ export function QuotationProposalEditor() {
                   />
                 </label>
 
-                <div className={styles.grid3}>
+                <div className="asb-grid-3">
                   <label>
-                    <span>Signer name</span>
+                    <span>Signer Name</span>
                     <input
                       value={
                         proposal.letter
@@ -1085,24 +1264,16 @@ export function QuotationProposalEditor() {
                   Page 3+ - Price Details
                 </h2>
 
-                <div className={styles.infoBox}>
-                  <strong>
-                    {
-                      quotation.items.length
-                    }{" "}
-                    commercial item(s)
-                  </strong>
-                  <span>
-                    Price pages are generated
-                    automatically. The final
-                    price page shows amount in
-                    words, total and signature.
-                  </span>
+                <div className="asb-info">
+                  Commercial item, quantity,
+                  rate and total come from the
+                  quotation. Price pages grow
+                  automatically.
                 </div>
 
                 <label>
                   <span>
-                    Rows per price page
+                    Rows per Price Page
                   </span>
                   <input
                     type="number"
@@ -1126,10 +1297,13 @@ export function QuotationProposalEditor() {
                   />
                 </label>
 
-                <div className={styles.items}>
+                <div className="asb-items">
                   {quotation.items.map(
                     (item, index) => (
-                      <div key={item.id}>
+                      <div
+                        className="asb-item"
+                        key={item.id}
+                      >
                         <span>
                           {index + 1}.{" "}
                           {item.description}
@@ -1143,11 +1317,10 @@ export function QuotationProposalEditor() {
                   )}
                 </div>
 
-                <div className={styles.infoBox}>
-                  To change item, quantity,
-                  rate or commercial totals,
-                  use the normal quotation
-                  commercial editor.
+                <div className="asb-info">
+                  To edit the commercial item
+                  list itself, use the normal
+                  quotation commercial data.
                 </div>
               </>
             )}
@@ -1155,8 +1328,7 @@ export function QuotationProposalEditor() {
             {tab === "terms" && (
               <>
                 <h2>
-                  Last Page - Terms &
-                  Payment
+                  Last Page - Terms & Payment
                 </h2>
 
                 {[
@@ -1172,7 +1344,12 @@ export function QuotationProposalEditor() {
                       rows={3}
                       value={
                         proposal.terms[
-                          key as keyof typeof proposal.terms
+                          key as
+                            | "validity"
+                            | "warranty"
+                            | "delivery"
+                            | "payment"
+                            | "handover"
                         ]
                       }
                       onChange={(event) =>
@@ -1194,7 +1371,7 @@ export function QuotationProposalEditor() {
 
                 <label>
                   <span>
-                    Additional terms
+                    Additional Terms
                   </span>
                   <textarea
                     rows={4}
@@ -1218,9 +1395,9 @@ export function QuotationProposalEditor() {
                   />
                 </label>
 
-                <div className={styles.grid3}>
+                <div className="asb-grid-3">
                   <label>
-                    <span>Signer name</span>
+                    <span>Signer Name</span>
                     <input
                       value={
                         proposal.terms
@@ -1291,174 +1468,137 @@ export function QuotationProposalEditor() {
               </>
             )}
 
-            {tab === "chrome" && (
+            {tab === "headerFooter" && (
               <>
                 <h2>
-                  Header & Footer - Every
-                  Page
+                  Header & Footer - Every Page
                 </h2>
 
-                <div className={styles.infoBox}>
+                <div className="asb-info">
                   Default header/footer applies
-                  to every quotation page.
-                  Select a specific generated
-                  page below to override it.
+                  to all quotation pages. Any
+                  generated page can override
+                  it.
                 </div>
 
+                <ChromeEditor
+                  title="Default Header"
+                  block={
+                    proposal.defaultHeader
+                  }
+                  onChange={(defaultHeader) =>
+                    setProposal(
+                      (current) => ({
+                        ...current,
+                        defaultHeader,
+                      }),
+                    )
+                  }
+                />
+
+                <ChromeEditor
+                  title="Default Footer"
+                  block={
+                    proposal.defaultFooter
+                  }
+                  onChange={(defaultFooter) =>
+                    setProposal(
+                      (current) => ({
+                        ...current,
+                        defaultFooter,
+                      }),
+                    )
+                  }
+                />
+
                 <label>
-                  <span>Edit</span>
+                  <span>Page Override</span>
                   <select
-                    value={chromePageKey}
+                    value={pageOverrideKey}
                     onChange={(event) =>
-                      setChromePageKey(
+                      setPageOverrideKey(
                         event.target.value,
                       )
                     }
                   >
-                    <option value="all">
-                      All pages - Default
-                    </option>
-
-                    {pageDescriptors.map(
-                      (page, index) => (
+                    {generatedPageKeys.map(
+                      (page) => (
                         <option
                           key={page.key}
                           value={page.key}
                         >
-                          Page {index + 1} -{" "}
-                          {page.kind === "cover"
-                            ? "Cover"
-                            : page.kind ===
-                                "letter"
-                              ? "Application Letter"
-                              : page.kind ===
-                                  "terms"
-                                ? "Terms & Payment"
-                                : `Price Details ${
-                                    (page.priceIndex ??
-                                      0) + 1
-                                  }`}
+                          {page.label}
                         </option>
                       ),
                     )}
                   </select>
                 </label>
 
-                {chromePageKey === "all" ? (
-                  <>
-                    <ChromeEditor
-                      title="Default Header"
-                      block={
-                        proposal.defaultHeader
-                      }
-                      onChange={(
-                        defaultHeader,
-                      ) =>
-                        setProposal(
-                          (current) => ({
-                            ...current,
-                            defaultHeader,
-                          }),
-                        )
-                      }
-                    />
+                <label className="asb-check">
+                  <input
+                    type="checkbox"
+                    checked={
+                      currentOverride.useHeader
+                    }
+                    onChange={(event) =>
+                      updateOverride({
+                        ...currentOverride,
+                        useHeader:
+                          event.target.checked,
+                      })
+                    }
+                  />
+                  Custom Header for this Page
+                </label>
 
-                    <ChromeEditor
-                      title="Default Footer"
-                      block={
-                        proposal.defaultFooter
-                      }
-                      onChange={(
-                        defaultFooter,
-                      ) =>
-                        setProposal(
-                          (current) => ({
-                            ...current,
-                            defaultFooter,
-                          }),
-                        )
-                      }
-                    />
-                  </>
-                ) : (
-                  <>
-                    <div
-                      className={
-                        styles.overrideChecks
-                      }
-                    >
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={
-                            override.useHeader
-                          }
-                          onChange={(event) =>
-                            setOverride({
-                              ...override,
-                              useHeader:
-                                event.target
-                                  .checked,
-                            })
-                          }
-                        />
-                        Custom header for this
-                        page
-                      </label>
-
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={
-                            override.useFooter
-                          }
-                          onChange={(event) =>
-                            setOverride({
-                              ...override,
-                              useFooter:
-                                event.target
-                                  .checked,
-                            })
-                          }
-                        />
-                        Custom footer for this
-                        page
-                      </label>
-                    </div>
-
-                    {override.useHeader && (
-                      <ChromeEditor
-                        title="Page Header"
-                        block={override.header}
-                        onChange={(header) =>
-                          setOverride({
-                            ...override,
-                            header,
-                          })
-                        }
-                      />
-                    )}
-
-                    {override.useFooter && (
-                      <ChromeEditor
-                        title="Page Footer"
-                        block={override.footer}
-                        onChange={(footer) =>
-                          setOverride({
-                            ...override,
-                            footer,
-                          })
-                        }
-                      />
-                    )}
-                  </>
+                {currentOverride.useHeader && (
+                  <ChromeEditor
+                    title="Page Header"
+                    block={
+                      currentOverride.header
+                    }
+                    onChange={(header) =>
+                      updateOverride({
+                        ...currentOverride,
+                        header,
+                      })
+                    }
+                  />
                 )}
 
-                <label
-                  className={
-                    styles.checkbox
-                  }
-                >
+                <label className="asb-check">
+                  <input
+                    type="checkbox"
+                    checked={
+                      currentOverride.useFooter
+                    }
+                    onChange={(event) =>
+                      updateOverride({
+                        ...currentOverride,
+                        useFooter:
+                          event.target.checked,
+                      })
+                    }
+                  />
+                  Custom Footer for this Page
+                </label>
+
+                {currentOverride.useFooter && (
+                  <ChromeEditor
+                    title="Page Footer"
+                    block={
+                      currentOverride.footer
+                    }
+                    onChange={(footer) =>
+                      updateOverride({
+                        ...currentOverride,
+                        footer,
+                      })
+                    }
+                  />
+                )}
+
+                <label className="asb-check">
                   <input
                     type="checkbox"
                     checked={
@@ -1475,33 +1615,34 @@ export function QuotationProposalEditor() {
                       )
                     }
                   />
-                  Show page number
+                  Show Page Number
                 </label>
               </>
             )}
           </div>
         </section>
 
-        <section className={styles.preview}>
-          <div className={styles.previewTitle}>
-            <strong>
-              Live multi-page preview
-            </strong>
-            <span>
-              Cover ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Letter ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Price
-              Page(s) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Terms
-            </span>
+        <section className="asb-editor-right">
+          <div className="asb-preview-head">
+            <div>
+              <strong>
+                Full Proposal Preview
+              </strong>
+              <span>
+                Cover → Letter → Price
+                Page(s) → Terms
+              </span>
+            </div>
           </div>
 
-          <div className={styles.previewScale}>
-            <QuotationProposalRenderer
-              quotation={quotation}
-              client={client}
-              project={project}
-              proposal={proposal}
-              compact
-            />
-          </div>
+          <iframe
+            key={previewVersion}
+            className="asb-preview-frame"
+            title="Quotation proposal preview"
+            src={`/quotations/proposal/preview?id=${encodeURIComponent(
+              quotation.id,
+            )}&embed=1&v=${previewVersion}`}
+          />
         </section>
       </div>
     </div>
