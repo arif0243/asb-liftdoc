@@ -638,6 +638,7 @@ function fallback(
     pageOverrides: {},
     showPageNumber: true,
     boldAllText: false,
+    printWithoutHeaderFooter: false,
     priceRowsPerPage: 12,
     updatedAt: "",
   };
@@ -957,19 +958,45 @@ function ChromeEditor({
       </label>
 
       {block.mode === "text" && (
-        <label>
-          <span>Text</span>
-          <textarea
-            rows={3}
-            value={block.text}
-            onChange={(event) =>
-              onChange({
-                ...block,
-                text: event.target.value,
-              })
-            }
-          />
-        </label>
+        <>
+          <label>
+            <span>Text Font Size (pt)</span>
+            <input
+              type="number"
+              min="6"
+              max="36"
+              step="0.5"
+              value={block.textFontSizePt ?? 8.5}
+              onChange={(event) =>
+                onChange({
+                  ...block,
+                  textFontSizePt:
+                    Math.max(
+                      6,
+                      Math.min(
+                        36,
+                        Number(event.target.value) || 8.5,
+                      ),
+                    ),
+                })
+              }
+            />
+          </label>
+
+          <label>
+            <span>Text</span>
+            <textarea
+              rows={3}
+              value={block.text}
+              onChange={(event) =>
+                onChange({
+                  ...block,
+                  text: event.target.value,
+                })
+              }
+            />
+          </label>
+        </>
       )}
 
       <div className="asb-chrome-upload-row">
@@ -2821,6 +2848,28 @@ export function QuotationProposalEditor() {
                   />
                   Show Page Number
                 </label>
+                <label className="asb-check">
+                  <input
+                    type="checkbox"
+                    checked={
+                      proposal.printWithoutHeaderFooter ?? false
+                    }
+                    onChange={(event) =>
+                      setProposal(
+                        (current) => ({
+                          ...current,
+                          printWithoutHeaderFooter:
+                            event.target.checked,
+                        }),
+                      )
+                    }
+                  />
+                  Print without Header and Footer
+                </label>
+
+                <div className="asb-info">
+                  This option affects printing / Save PDF only. Header and Footer remain visible in the editor and preview.
+                </div>
               </>
             )}
           </div>

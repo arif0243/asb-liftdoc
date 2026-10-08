@@ -446,6 +446,16 @@ body {
 }
 
 @media print {
+  .asb-q-print-no-chrome .asb-q-header,
+  .asb-q-print-no-chrome .asb-q-footer {
+    display: none !important;
+  }
+
+  .asb-q-print-no-chrome .asb-q-page {
+    padding-top: 10mm;
+    padding-bottom: 10mm;
+  }
+
   @page {
     size: A4 portrait;
     margin: 0;
@@ -736,6 +746,10 @@ function Chrome({
               : "center",
         textAlign:
           value.align || "center",
+        fontSize:
+          value.mode === "text"
+            ? `${value.textFontSizePt ?? 8.5}pt`
+            : undefined,
       }}
     >
       {value.mode === "image" &&
@@ -899,6 +913,9 @@ export function QuotationProposalPreview() {
         embed ? "asb-q-embed" : "",
         proposal.boldAllText
           ? "asb-q-bold-all"
+          : "",
+        proposal.printWithoutHeaderFooter
+          ? "asb-q-print-no-chrome"
           : "",
       ]
         .filter(Boolean)

@@ -97,6 +97,7 @@ export function defaultQuotationProposal(
 
     showPageNumber: true,
     boldAllText: false,
+    printWithoutHeaderFooter: false,
     priceRowsPerPage: 12,
 
     updatedAt: "",
@@ -201,6 +202,11 @@ function cleanChrome(
       value?.text,
       fallback.text,
     ),
+    textFontSizePt:
+      Number(value?.textFontSizePt) >= 6 &&
+      Number(value?.textFontSizePt) <= 36
+        ? Number(value?.textFontSizePt)
+        : fallback.textFontSizePt ?? 8.5,
     imageData: stringValue(
       value?.imageData,
       fallback.imageData,
@@ -532,6 +538,11 @@ export async function saveQuotationProposal(
       input.boldAllText === undefined
         ? fallback.boldAllText ?? false
         : Boolean(input.boldAllText),
+
+    printWithoutHeaderFooter:
+      input.printWithoutHeaderFooter === undefined
+        ? fallback.printWithoutHeaderFooter ?? false
+        : Boolean(input.printWithoutHeaderFooter),
 
     priceRowsPerPage:
       Number.isFinite(rows) &&

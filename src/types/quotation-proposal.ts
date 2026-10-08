@@ -4,6 +4,7 @@ export type ProposalChromeAlign = "left" | "center" | "right";
 export type ProposalChromeBlock = {
   mode: ProposalChromeMode;
   text: string;
+  textFontSizePt?: number;
   imageData: string;
   imageWidthMm?: number;
   imageHeightMm?: number;
@@ -78,6 +79,7 @@ export type QuotationProposal = {
 
   showPageNumber: boolean;
   boldAllText?: boolean;
+  printWithoutHeaderFooter?: boolean;
   priceRowsPerPage: number;
 
   updatedAt: string;
