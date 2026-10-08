@@ -1,13 +1,15 @@
-﻿"use client";
+"use client";
 
 import {
   Calculator,
   Copy,
   Edit3,
+  Eye,
   FilePlus2,
   FileStack,
   FileText,
   Plus,
+  Printer,
   RefreshCw,
   RotateCcw,
   Search,
@@ -25,6 +27,8 @@ import type {
   QuotationItem,
   QuotationStatus,
 } from "@/types/quotation";
+
+import actionStyles from "./quotation-actions.module.css";
 
 type FormItem = {
   id: string;
@@ -490,14 +494,34 @@ export function QuotationsWorkspace() {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={() => openEdit(selected)}
-                  aria-label="Edit quotation"
-                >
-                  <Edit3 size={16} />
-                </button>
+                <div className={actionStyles.detailActions}>
+                  <button
+                    type="button"
+                    className={actionStyles.actionButton}
+                    onClick={() => openEdit(selected)}
+                    aria-label="Edit quotation"
+                  >
+                    <Edit3 size={15} />
+                    Edit
+                  </button>
+
+                  <button
+                    type="button"
+                    className={actionStyles.actionButton}
+                    onClick={() =>
+                      window.open(
+                        `/quotations/preview?id=${encodeURIComponent(
+                          selected.id,
+                        )}`,
+                        "_blank",
+                      )
+                    }
+                    aria-label="Preview quotation"
+                  >
+                    <Eye size={15} />
+                    Preview
+                  </button>
+                </div>
               </div>
 
               <div className="quotation-title-block">
@@ -952,6 +976,42 @@ export function QuotationsWorkspace() {
               {error && <div className="form-error">{error}</div>}
 
               <div className="modal-actions">
+                {form.id && (
+                  <div className={actionStyles.modalPreviewActions}>
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        window.open(
+                          `/quotations/header-footer?id=${encodeURIComponent(
+                            form.id || "",
+                          )}`,
+                          "_blank",
+                        )
+                      }
+                    >
+                      <FileText size={15} />
+                      Header & Footer
+                    </button>
+
+                    <button
+                      type="button"
+                      className="button button-secondary"
+                      onClick={() =>
+                        window.open(
+                          `/quotations/preview?id=${encodeURIComponent(
+                            form.id || "",
+                          )}`,
+                          "_blank",
+                        )
+                      }
+                    >
+                      <Printer size={15} />
+                      Print preview
+                    </button>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   className="button button-secondary"

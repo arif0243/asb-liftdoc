@@ -1,0 +1,43 @@
+.detailActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.actionButton {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border: 1px solid #d1dbe3;
+  border-radius: 8px;
+  color: #294258;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  border-color: #9eb1c0;
+  background: #f8fafc;
+}
+
+.modalPreviewActions {
+  display: flex;
+  gap: 7px;
+  margin-right: auto;
+}
+
+@media (max-width: 700px) {
+  .detailActions {
+    flex-wrap: wrap;
+  }
+
+  .modalPreviewActions {
+    width: 100%;
+    margin-right: 0;
+  }
+}

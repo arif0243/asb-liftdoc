@@ -57,3 +57,6 @@ next-env.d.ts
 
 /data/invoices.json
 
+
+/data/quotation-layouts.json
+
