@@ -567,6 +567,11 @@ body {
     display: none !important;
   }
 
+  body.asb-print-no-chrome .asb-q-header,
+  body.asb-print-no-chrome .asb-q-footer {
+    display: none !important;
+  }
+
   .asb-q-stage {
     display: block;
     padding: 0;
@@ -876,6 +881,12 @@ function printQuotationOnly() {
     );
   }
 
+  const omitHeaderFooter = Boolean(
+    source.closest(
+      ".asb-q-print-no-chrome",
+    ),
+  );
+
   const printWindow = window.open(
     "",
     "_blank",
@@ -926,6 +937,11 @@ ${inheritedStyles}
   }
 
   .asb-q-toolbar {
+    display: none !important;
+  }
+
+  body.asb-print-no-chrome .asb-q-header,
+  body.asb-print-no-chrome .asb-q-footer {
     display: none !important;
   }
 
@@ -991,7 +1007,7 @@ ${inheritedStyles}
   }
 </style>
 </head>
-<body>
+<body class="${omitHeaderFooter ? "asb-print-no-chrome" : ""}">
 ${source.outerHTML}
 </body>
 </html>`);
@@ -1221,7 +1237,53 @@ export function QuotationProposalPreview() {
                 const editUrl =
                   `/quotations/proposal?id=${encodeURIComponent(
                     quotation.id,
-                  )}`;
+                  )}
+/* ASB_A4_PRINT_NO_CHROME_FIX_START */
+
+/* Exact physical A4 portrait size */
+.asb-q-page {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+
+  height: 297mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+
+  box-sizing: border-box !important;
+}
+
+@page {
+  size: 210mm 297mm;
+  margin: 0;
+}
+
+@media print {
+  .asb-q-page {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+
+    box-sizing: border-box !important;
+  }
+
+  /*
+    Normal browser-print path:
+    if "Print without Header and Footer" is checked,
+    hide both chrome blocks.
+  */
+  .asb-q-print-no-chrome .asb-q-header,
+  .asb-q-print-no-chrome .asb-q-footer {
+    display: none !important;
+  }
+}
+
+/* ASB_A4_PRINT_NO_CHROME_FIX_END */
+`;
 
                 if (
                   window.opener &&
