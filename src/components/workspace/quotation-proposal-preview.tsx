@@ -205,6 +205,13 @@ const CSS = `
   font-size: 15pt;
 }
 
+.asb-q-cover-logo {
+  max-width: 46mm;
+  max-height: 24mm;
+  object-fit: contain;
+  margin: 1mm 0 2mm;
+}
+
 .asb-q-cover-block p {
   max-width: 130mm;
   margin: 0;
@@ -808,11 +815,11 @@ export function QuotationProposalPreview() {
 
           <div className="asb-q-toolbar-title">
             <strong>
-              {quotation.quotationNo} Ã‚Â· Rev{" "}
+              {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
               {quotation.revisionNo}
             </strong>
             <span>
-              Full Proposal Preview Ã‚Â·{" "}
+              Full Proposal Preview Ãƒâ€šÃ‚Â·{" "}
               {pages.length} pages
             </span>
           </div>
@@ -925,6 +932,15 @@ export function QuotationProposalPreview() {
 
                     <div className="asb-q-cover-block">
                       <span>Prepared For :</span>
+
+                      {proposal.cover.preparedForLogoData && (
+                        <img
+                          className="asb-q-cover-logo"
+                          src={proposal.cover.preparedForLogoData}
+                          alt="Prepared For logo"
+                        />
+                      )}
+
                       <strong>
                         {preparedFor}
                       </strong>
@@ -935,6 +951,15 @@ export function QuotationProposalPreview() {
 
                     <div className="asb-q-cover-block">
                       <span>Prepared By:</span>
+
+                      {proposal.cover.preparedByLogoData && (
+                        <img
+                          className="asb-q-cover-logo"
+                          src={proposal.cover.preparedByLogoData}
+                          alt="Prepared By logo"
+                        />
+                      )}
+
                       <strong>
                         {proposal.cover
                           .preparedBy ||

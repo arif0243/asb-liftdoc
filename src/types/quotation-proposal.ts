@@ -19,8 +19,10 @@ export type ProposalPageChromeOverride = {
 export type QuotationProposalCover = {
   proposalTitle: string;
   preparedFor: string;
+  preparedForLogoData: string;
   preparedForAddress: string;
   preparedBy: string;
+  preparedByLogoData: string;
   preparedByAddress: string;
   submissionDate: string;
 };

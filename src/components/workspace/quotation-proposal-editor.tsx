@@ -183,6 +183,57 @@ const CSS = `
   gap: 8px;
 }
 
+.asb-cover-logo-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.asb-cover-logo-upload {
+  min-height: 34px;
+  display: inline-flex !important;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px !important;
+  width: fit-content;
+  padding: 7px 10px;
+  border: 1px solid #ccd8e1;
+  border-radius: 7px;
+  color: #294258;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-cover-logo-upload input {
+  display: none;
+}
+
+.asb-cover-logo-remove {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid #e1c9c9;
+  border-radius: 7px;
+  color: #8a3434;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-cover-logo-preview {
+  width: 88px;
+  height: 58px;
+  object-fit: contain;
+  padding: 5px;
+  border: 1px solid #dce4eb;
+  border-radius: 7px;
+  background: #fff;
+}
+
 .asb-info {
   padding: 10px;
   border: 1px solid #d8e2ea;
@@ -369,8 +420,10 @@ function fallback(
     cover: {
       proposalTitle: "Financial Proposal",
       preparedFor: "",
+      preparedForLogoData: "",
       preparedForAddress: "",
       preparedBy: "ASB Lift",
+      preparedByLogoData: "",
       preparedByAddress: "",
       submissionDate: "",
     },
@@ -712,6 +765,35 @@ export function QuotationProposalEditor() {
     return keys;
   }, [pricePageCount]);
 
+  const uploadCoverLogo = (
+    field:
+      | "preparedForLogoData"
+      | "preparedByLogoData",
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setProposal((current) => ({
+        ...current,
+        cover: {
+          ...current.cover,
+          [field]:
+            typeof reader.result === "string"
+              ? reader.result
+              : "",
+        },
+      }));
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
   const save = async () => {
     if (!quotationId) return;
 
@@ -810,7 +892,7 @@ export function QuotationProposalEditor() {
       <header className="asb-editor-top">
         <div className="asb-editor-title">
           <span>
-            {quotation.quotationNo} · Rev{" "}
+            {quotation.quotationNo} Â· Rev{" "}
             {quotation.revisionNo}
           </span>
           <h1>Proposal Editor</h1>
@@ -932,6 +1014,53 @@ export function QuotationProposalEditor() {
                     }
                   />
                 </label>
+                <div>
+                  <span style={{ display: "block", marginBottom: 5, color: "#65798a", fontSize: 8, fontWeight: 800 }}>
+                    Prepared For Logo
+                  </span>
+
+                  <div className="asb-cover-logo-tools">
+                    <label className="asb-cover-logo-upload">
+                      Upload Logo
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={(event) =>
+                          uploadCoverLogo(
+                            "preparedForLogoData",
+                            event,
+                          )
+                        }
+                      />
+                    </label>
+
+                    {proposal.cover.preparedForLogoData && (
+                      <>
+                        <img
+                          className="asb-cover-logo-preview"
+                          src={proposal.cover.preparedForLogoData}
+                          alt="Prepared For logo"
+                        />
+
+                        <button
+                          type="button"
+                          className="asb-cover-logo-remove"
+                          onClick={() =>
+                            setProposal((current) => ({
+                              ...current,
+                              cover: {
+                                ...current.cover,
+                                preparedForLogoData: "",
+                              },
+                            }))
+                          }
+                        >
+                          Remove
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
 
                 <label>
                   <span>
@@ -984,6 +1113,53 @@ export function QuotationProposalEditor() {
                     }
                   />
                 </label>
+                <div>
+                  <span style={{ display: "block", marginBottom: 5, color: "#65798a", fontSize: 8, fontWeight: 800 }}>
+                    Prepared By Logo
+                  </span>
+
+                  <div className="asb-cover-logo-tools">
+                    <label className="asb-cover-logo-upload">
+                      Upload Logo
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={(event) =>
+                          uploadCoverLogo(
+                            "preparedByLogoData",
+                            event,
+                          )
+                        }
+                      />
+                    </label>
+
+                    {proposal.cover.preparedByLogoData && (
+                      <>
+                        <img
+                          className="asb-cover-logo-preview"
+                          src={proposal.cover.preparedByLogoData}
+                          alt="Prepared By logo"
+                        />
+
+                        <button
+                          type="button"
+                          className="asb-cover-logo-remove"
+                          onClick={() =>
+                            setProposal((current) => ({
+                              ...current,
+                              cover: {
+                                ...current.cover,
+                                preparedByLogoData: "",
+                              },
+                            }))
+                          }
+                        >
+                          Remove
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
 
                 <label>
                   <span>
@@ -1629,8 +1805,8 @@ export function QuotationProposalEditor() {
                 Full Proposal Preview
               </strong>
               <span>
-                Cover → Letter → Price
-                Page(s) → Terms
+                Cover â†’ Letter â†’ Price
+                Page(s) â†’ Terms
               </span>
             </div>
           </div>

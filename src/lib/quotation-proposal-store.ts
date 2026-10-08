@@ -43,8 +43,10 @@ export function defaultQuotationProposal(
     cover: {
       proposalTitle: title || "Financial Proposal",
       preparedFor: "",
+      preparedForLogoData: "",
       preparedForAddress: "",
       preparedBy: "ASB Lift",
+      preparedByLogoData: "",
       preparedByAddress: "",
       submissionDate: "",
     },
@@ -306,6 +308,10 @@ export async function saveQuotationProposal(
         input.cover?.preparedFor,
         "",
       ),
+      preparedForLogoData: stringValue(
+        input.cover?.preparedForLogoData,
+        "",
+      ),
       preparedForAddress: stringValue(
         input.cover?.preparedForAddress,
         "",
@@ -313,6 +319,10 @@ export async function saveQuotationProposal(
       preparedBy: stringValue(
         input.cover?.preparedBy,
         fallback.cover.preparedBy,
+      ),
+      preparedByLogoData: stringValue(
+        input.cover?.preparedByLogoData,
+        "",
       ),
       preparedByAddress: stringValue(
         input.cover?.preparedByAddress,
