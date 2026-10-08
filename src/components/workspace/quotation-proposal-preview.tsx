@@ -28,15 +28,9 @@ type Payload = {
   projects: Project[];
 };
 
-type PageKind =
-  | "cover"
-  | "letter"
-  | "price"
-  | "terms";
-
 type ProposalPage = {
   key: string;
-  kind: PageKind;
+  kind: "cover" | "letter" | "price" | "terms";
   priceIndex?: number;
   start?: number;
   end?: number;
@@ -47,14 +41,31 @@ const CSS = `
   box-sizing: border-box;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .asb-q-preview {
   position: fixed;
   inset: 0;
   z-index: 999999;
   overflow: auto;
+  color: #161b20;
   background: #dfe5ea;
-  color: #14191e;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.asb-q-preview.asb-q-embed {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #e6ebef;
 }
 
 .asb-q-toolbar {
@@ -70,6 +81,10 @@ const CSS = `
   border-bottom: 1px solid #d2dae1;
   background: rgba(255,255,255,.98);
   box-shadow: 0 3px 16px rgba(18,35,50,.08);
+}
+
+.asb-q-embed .asb-q-toolbar {
+  display: none;
 }
 
 .asb-q-toolbar-left,
@@ -122,6 +137,11 @@ const CSS = `
   padding: 30px 20px 48px;
 }
 
+.asb-q-embed .asb-q-stage {
+  gap: 18px;
+  padding: 18px 10px 30px;
+}
+
 .asb-q-page {
   position: relative;
   width: 210mm;
@@ -129,10 +149,19 @@ const CSS = `
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* Fixed 1 inch blank area at left and right */
   padding: 10mm 25.4mm 10mm;
+
+  color: #111;
   background: #fff;
   box-shadow: 0 16px 42px rgba(16,32,48,.18);
   page-break-after: always;
+}
+
+.asb-q-embed .asb-q-page {
+  zoom: .52;
+  box-shadow: 0 10px 26px rgba(16,32,48,.16);
 }
 
 .asb-q-page:last-child {
@@ -181,12 +210,13 @@ const CSS = `
 }
 
 .asb-q-cover h1 {
-  margin: 8mm auto 0;
   max-width: 150mm;
+  margin: 8mm auto 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 22pt;
   line-height: 1.35;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .asb-q-cover-block {
@@ -205,19 +235,18 @@ const CSS = `
   font-size: 15pt;
 }
 
-.asb-q-cover-logo {
-  max-width: 46mm;
-  max-height: 24mm;
-  object-fit: contain;
-  margin: 1mm 0 2mm;
-}
-
 .asb-q-cover-block p {
   max-width: 145mm;
   margin: 0;
   font-size: 10pt;
   line-height: 1.4;
   white-space: pre-wrap;
+}
+
+.asb-q-cover-logo {
+  max-width: 100%;
+  object-fit: contain;
+  margin: 1mm 0 2mm;
 }
 
 .asb-q-submission {
@@ -332,7 +361,7 @@ const CSS = `
 .asb-q-table td:nth-child(4),
 .asb-q-table th:nth-child(5),
 .asb-q-table td:nth-child(5) {
-  width: 29mm;
+  width: 27mm;
   text-align: right;
 }
 
@@ -381,22 +410,13 @@ const CSS = `
 }
 
 .asb-q-loading {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #eef2f5;
   color: #5f7180;
   font-size: 14px;
-}
-
-@media (max-width: 1050px) {
-  .asb-q-stage {
-    justify-items: start;
-    overflow-x: auto;
-  }
 }
 
 @media print {
@@ -427,7 +447,9 @@ const CSS = `
     padding: 0;
   }
 
-  .asb-q-page {
+  .asb-q-page,
+  .asb-q-embed .asb-q-page {
+    zoom: 1;
     margin: 0;
     box-shadow: none;
     break-after: page;
@@ -642,18 +664,44 @@ function Chrome({
     return null;
   }
 
+  const imageWidth =
+    Number(value.imageWidthMm) > 0
+      ? Math.min(
+          159.2,
+          Number(value.imageWidthMm),
+        )
+      : 159.2;
+
+  const imageHeight =
+    Number(value.imageHeightMm) > 0
+      ? Math.min(
+          60,
+          Number(value.imageHeightMm),
+        )
+      : 30;
+
+  const areaHeight =
+    value.mode === "image" &&
+    value.imageData
+      ? Math.max(
+          Number(value.heightMm) || 12,
+          imageHeight + 2,
+        )
+      : Number(value.heightMm) || 12;
+
   return (
     <div
       className={className}
       style={{
-        minHeight: `${value.heightMm || 12}mm`,
+        minHeight: `${areaHeight}mm`,
         justifyContent:
           value.align === "left"
             ? "flex-start"
             : value.align === "right"
               ? "flex-end"
               : "center",
-        textAlign: value.align || "center",
+        textAlign:
+          value.align || "center",
       }}
     >
       {value.mode === "image" &&
@@ -661,6 +709,13 @@ function Chrome({
         <img
           src={value.imageData}
           alt=""
+          style={{
+            width: `${imageWidth}mm`,
+            height: `${imageHeight}mm`,
+            maxWidth: "100%",
+            objectFit: "contain",
+            flex: "0 0 auto",
+          }}
         />
       ) : (
         <div>{value.text}</div>
@@ -671,8 +726,12 @@ function Chrome({
 
 export function QuotationProposalPreview() {
   const searchParams = useSearchParams();
+
   const quotationId =
     searchParams.get("id") ?? "";
+
+  const embed =
+    searchParams.get("embed") === "1";
 
   const [payload, setPayload] =
     useState<Payload | null>(null);
@@ -681,11 +740,10 @@ export function QuotationProposalPreview() {
     useState<QuotationProposal | null>(null);
 
   const [loading, setLoading] =
-    useState(true);
+    useState(Boolean(quotationId));
 
   useEffect(() => {
     if (!quotationId) {
-      setLoading(false);
       return;
     }
 
@@ -781,6 +839,7 @@ export function QuotationProposalPreview() {
   if (loading) {
     return (
       <div className="asb-q-loading">
+        <style>{CSS}</style>
         Loading quotation preview...
       </div>
     );
@@ -789,6 +848,7 @@ export function QuotationProposalPreview() {
   if (!quotation || !proposal) {
     return (
       <div className="asb-q-loading">
+        <style>{CSS}</style>
         Quotation proposal not found.
       </div>
     );
@@ -799,71 +859,90 @@ export function QuotationProposalPreview() {
   );
 
   return (
-    <div className="asb-q-preview">
+    <div
+      className={
+        embed
+          ? "asb-q-preview asb-q-embed"
+          : "asb-q-preview"
+      }
+    >
       <style>{CSS}</style>
 
-      <header className="asb-q-toolbar">
-        <div className="asb-q-toolbar-left">
-          <button
-            type="button"
-            className="asb-q-btn"
-            onClick={() => window.close()}
-          >
-            <X size={14} />
-            Close
-          </button>
+      {!embed && (
+        <header className="asb-q-toolbar">
+          <div className="asb-q-toolbar-left">
+            <button
+              type="button"
+              className="asb-q-btn"
+              onClick={() => {
+                if (
+                  window.opener &&
+                  !window.opener.closed
+                ) {
+                  window.close();
+                  return;
+                }
 
-          <div className="asb-q-toolbar-title">
-            <strong>
-              {quotation.quotationNo} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Rev{" "}
-              {quotation.revisionNo}
-            </strong>
-            <span>
-              Full Proposal Preview ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
-              {pages.length} pages
-            </span>
+                window.location.href =
+                  "/quotations";
+              }}
+            >
+              <X size={14} />
+              Close
+            </button>
+
+            <div className="asb-q-toolbar-title">
+              <strong>
+                {quotation.quotationNo} - Rev{" "}
+                {quotation.revisionNo}
+              </strong>
+              <span>
+                Full Proposal Preview -{" "}
+                {pages.length} pages
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="asb-q-toolbar-right">
-          <button
-            type="button"
-            className="asb-q-btn"
-            onClick={() => {
-              const editUrl =
-                `/quotations/proposal?id=${encodeURIComponent(
-                  quotation.id,
-                )}`;
+          <div className="asb-q-toolbar-right">
+            <button
+              type="button"
+              className="asb-q-btn"
+              onClick={() => {
+                const editUrl =
+                  `/quotations/proposal?id=${encodeURIComponent(
+                    quotation.id,
+                  )}`;
 
-              if (
-                window.opener &&
-                !window.opener.closed
-              ) {
-                window.opener.location.href =
+                if (
+                  window.opener &&
+                  !window.opener.closed
+                ) {
+                  window.opener.location.href =
+                    editUrl;
+                  window.opener.focus();
+                  window.close();
+                  return;
+                }
+
+                window.location.href =
                   editUrl;
-                window.opener.focus();
-                window.close();
-                return;
-              }
+              }}
+            >
+              <Edit3 size={14} />
+              Edit
+            </button>
 
-              window.location.href =
-                editUrl;
-            }}
-          >
-            <Edit3 size={14} />
-            Edit
-          </button>
-
-          <button
-            type="button"
-            className="asb-q-btn asb-q-btn-primary"
-            onClick={() => window.print()}
-          >
-            <Printer size={14} />
-            Print / Save PDF
-          </button>
-        </div>
-      </header>
+            <button
+              type="button"
+              className="asb-q-btn asb-q-btn-primary"
+              onClick={() => window.print()}
+            >
+              <Printer size={14} />
+              Print / Save PDF
+            </button>
+          </div>
+        </header>
+      )}
 
       <main className="asb-q-stage">
         {pages.map((page, pageIndex) => {
@@ -931,18 +1010,28 @@ export function QuotationProposalPreview() {
                     </h1>
 
                     <div className="asb-q-cover-block">
-                      <span>Prepared For :</span>
+                      <span>Prepared For:</span>
 
-                      {proposal.cover.preparedForLogoData && (
+                      {proposal.cover
+                        .preparedForLogoData && (
                         <img
                           className="asb-q-cover-logo"
-                          src={proposal.cover.preparedForLogoData}
+                          src={
+                            proposal.cover
+                              .preparedForLogoData
+                          }
                           alt="Prepared For logo"
                           style={{
-                            width: `${proposal.cover.preparedForLogoWidthMm || 45}mm`,
-                            height: `${proposal.cover.preparedForLogoHeightMm || 20}mm`,
-                            maxWidth: "100%",
-                            objectFit: "contain",
+                            width: `${
+                              proposal.cover
+                                .preparedForLogoWidthMm ||
+                              45
+                            }mm`,
+                            height: `${
+                              proposal.cover
+                                .preparedForLogoHeightMm ||
+                              20
+                            }mm`,
                           }}
                         />
                       )}
@@ -950,6 +1039,7 @@ export function QuotationProposalPreview() {
                       <strong>
                         {preparedFor}
                       </strong>
+
                       <p>
                         {preparedForAddress}
                       </p>
@@ -958,16 +1048,26 @@ export function QuotationProposalPreview() {
                     <div className="asb-q-cover-block">
                       <span>Prepared By:</span>
 
-                      {proposal.cover.preparedByLogoData && (
+                      {proposal.cover
+                        .preparedByLogoData && (
                         <img
                           className="asb-q-cover-logo"
-                          src={proposal.cover.preparedByLogoData}
+                          src={
+                            proposal.cover
+                              .preparedByLogoData
+                          }
                           alt="Prepared By logo"
                           style={{
-                            width: `${proposal.cover.preparedByLogoWidthMm || 45}mm`,
-                            height: `${proposal.cover.preparedByLogoHeightMm || 20}mm`,
-                            maxWidth: "100%",
-                            objectFit: "contain",
+                            width: `${
+                              proposal.cover
+                                .preparedByLogoWidthMm ||
+                              45
+                            }mm`,
+                            height: `${
+                              proposal.cover
+                                .preparedByLogoHeightMm ||
+                              20
+                            }mm`,
                           }}
                         />
                       )}
@@ -977,6 +1077,7 @@ export function QuotationProposalPreview() {
                           .preparedBy ||
                           "ASB Lift"}
                       </strong>
+
                       <p>
                         {
                           proposal.cover

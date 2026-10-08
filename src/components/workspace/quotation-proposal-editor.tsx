@@ -377,6 +377,68 @@ const CSS = `
   flex-wrap: wrap;
 }
 
+.asb-hf-align-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.asb-hf-align-buttons button {
+  min-height: 34px;
+  padding: 7px 8px;
+  border: 1px solid #ccd8e1;
+  border-radius: 7px;
+  color: #52697b;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-hf-align-buttons button.active {
+  border-color: #153e62;
+  color: #153e62;
+  background: #eef5fb;
+}
+
+.asb-hf-size-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.asb-hf-ratio-row {
+  display: flex !important;
+  align-items: center;
+  gap: 7px !important;
+  color: #40586d;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.asb-hf-ratio-row input {
+  width: auto !important;
+  min-height: auto !important;
+}
+
+.asb-hf-ratio-button {
+  min-height: 34px;
+  width: fit-content;
+  padding: 7px 10px;
+  border: 1px solid #ccd8e1;
+  border-radius: 7px;
+  color: #294258;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-hf-note {
+  color: #81909c;
+  font-size: 7.5px;
+  line-height: 1.45;
+}
 .asb-chrome-remove {
   min-height: 34px;
   padding: 7px 9px;
@@ -534,6 +596,8 @@ function ChromeEditor({
   block,
   onChange,
 }: ChromeEditorProps) {
+  const MAX_WIDTH_MM = 159.2;
+
   const upload = (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
@@ -544,79 +608,264 @@ function ChromeEditor({
     const reader = new FileReader();
 
     reader.onload = () => {
-      onChange({
-        ...block,
-        mode: "image",
-        imageData:
-          typeof reader.result === "string"
-            ? reader.result
-            : "",
-      });
+      const data =
+        typeof reader.result === "string"
+          ? reader.result
+          : "";
+
+      if (!data) return;
+
+      const image = new Image();
+
+      image.onload = () => {
+        const ratio =
+          image.naturalWidth > 0 &&
+          image.naturalHeight > 0
+            ? image.naturalWidth /
+              image.naturalHeight
+            : 1;
+
+        let widthMm = MAX_WIDTH_MM;
+        let heightMm =
+          Math.round(
+            (widthMm / ratio) * 10,
+          ) / 10;
+
+        if (heightMm > 60) {
+          heightMm = 60;
+          widthMm =
+            Math.round(
+              heightMm * ratio * 10,
+            ) / 10;
+        }
+
+        onChange({
+          ...block,
+          mode: "image",
+          imageData: data,
+          imageWidthMm: Math.min(
+            MAX_WIDTH_MM,
+            widthMm,
+          ),
+          imageHeightMm: Math.max(
+            5,
+            heightMm,
+          ),
+          imageLockRatio: true,
+          imageAspectRatio: ratio,
+        });
+      };
+
+      image.src = data;
     };
 
     reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
+  const setSize = (
+    dimension: "width" | "height",
+    rawValue: number,
+  ) => {
+    const ratio =
+      Number(block.imageAspectRatio) > 0
+        ? Number(block.imageAspectRatio)
+        : 1;
+
+    const lock =
+      block.imageLockRatio !== false;
+
+    const width =
+      Number(block.imageWidthMm) > 0
+        ? Number(block.imageWidthMm)
+        : MAX_WIDTH_MM;
+
+    const height =
+      Number(block.imageHeightMm) > 0
+        ? Number(block.imageHeightMm)
+        : Math.max(
+            5,
+            Math.round(
+              (width / ratio) * 10,
+            ) / 10,
+          );
+
+    if (dimension === "width") {
+      const nextWidth = Math.max(
+        10,
+        Math.min(
+          MAX_WIDTH_MM,
+          Number(rawValue) || 10,
+        ),
+      );
+
+      onChange({
+        ...block,
+        imageWidthMm: nextWidth,
+        imageHeightMm: lock
+          ? Math.max(
+              5,
+              Math.min(
+                60,
+                Math.round(
+                  (nextWidth / ratio) *
+                    10,
+                ) / 10,
+              ),
+            )
+          : height,
+      });
+
+      return;
+    }
+
+    const nextHeight = Math.max(
+      5,
+      Math.min(
+        60,
+        Number(rawValue) || 5,
+      ),
+    );
+
+    onChange({
+      ...block,
+      imageHeightMm: nextHeight,
+      imageWidthMm: lock
+        ? Math.max(
+            10,
+            Math.min(
+              MAX_WIDTH_MM,
+              Math.round(
+                nextHeight *
+                  ratio *
+                  10,
+              ) / 10,
+            ),
+          )
+        : width,
+    });
+  };
+
+  const applyAspectRatio = () => {
+    const ratio =
+      Number(block.imageAspectRatio) > 0
+        ? Number(block.imageAspectRatio)
+        : 1;
+
+    const width = Math.max(
+      10,
+      Math.min(
+        MAX_WIDTH_MM,
+        Number(block.imageWidthMm) ||
+          MAX_WIDTH_MM,
+      ),
+    );
+
+    onChange({
+      ...block,
+      imageWidthMm: width,
+      imageHeightMm: Math.max(
+        5,
+        Math.min(
+          60,
+          Math.round(
+            (width / ratio) * 10,
+          ) / 10,
+        ),
+      ),
+      imageLockRatio: true,
+    });
   };
 
   return (
     <section className="asb-chrome-card">
       <div className="asb-chrome-title">
         <strong>{title}</strong>
-        <span>{block.heightMm} mm</span>
+        <span>
+          {block.imageData
+            ? "Image"
+            : block.mode}
+        </span>
       </div>
 
-      <div className="asb-grid-3">
-        <label>
-          <span>Mode</span>
-          <select
-            value={block.mode}
-            onChange={(event) =>
-              onChange({
-                ...block,
-                mode: event.target.value as ProposalChromeBlock["mode"],
-              })
-            }
-          >
-            <option value="none">None</option>
-            <option value="text">Text</option>
-            <option value="image">Image</option>
-          </select>
-        </label>
+      <label>
+        <span>Mode</span>
+        <select
+          value={block.mode}
+          onChange={(event) =>
+            onChange({
+              ...block,
+              mode:
+                event.target
+                  .value as ProposalChromeBlock["mode"],
+            })
+          }
+        >
+          <option value="none">None</option>
+          <option value="text">Text</option>
+          <option value="image">Image</option>
+        </select>
+      </label>
 
-        <label>
-          <span>Align</span>
-          <select
-            value={block.align}
-            onChange={(event) =>
-              onChange({
-                ...block,
-                align: event.target.value as ProposalChromeBlock["align"],
-              })
-            }
-          >
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-          </select>
-        </label>
+      <div>
+        <span
+          style={{
+            display: "block",
+            marginBottom: 5,
+            color: "#65798a",
+            fontSize: 8,
+            fontWeight: 800,
+          }}
+        >
+          Alignment
+        </span>
 
-        <label>
-          <span>Height</span>
-          <input
-            type="number"
-            min="5"
-            max="70"
-            value={block.heightMm}
-            onChange={(event) =>
-              onChange({
-                ...block,
-                heightMm: Number(
-                  event.target.value,
-                ),
-              })
-            }
-          />
-        </label>
+        <div className="asb-hf-align-buttons">
+          {[
+            ["left", "Left"],
+            ["center", "Center"],
+            ["right", "Right"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={
+                block.align === value
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                onChange({
+                  ...block,
+                  align:
+                    value as ProposalChromeBlock["align"],
+                })
+              }
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      <label>
+        <span>Header / Footer Area Height (mm)</span>
+        <input
+          type="number"
+          min="5"
+          max="70"
+          step="1"
+          value={block.heightMm}
+          onChange={(event) =>
+            onChange({
+              ...block,
+              heightMm: Number(
+                event.target.value,
+              ),
+            })
+          }
+        />
+      </label>
 
       {block.mode === "text" && (
         <label>
@@ -633,9 +882,13 @@ function ChromeEditor({
           />
         </label>
       )}
+
       <div className="asb-chrome-upload-row">
         <label className="asb-upload">
-          {block.imageData ? "Change Image" : "Upload Image"}
+          {block.imageData
+            ? "Change Image"
+            : "Upload Image"}
+
           <input
             type="file"
             accept="image/png,image/jpeg,image/webp"
@@ -661,11 +914,93 @@ function ChromeEditor({
       </div>
 
       {block.imageData && (
-        <img
-          className="asb-upload-preview"
-          src={block.imageData}
-          alt=""
-        />
+        <>
+          <img
+            className="asb-upload-preview"
+            src={block.imageData}
+            alt=""
+          />
+
+          <div className="asb-hf-size-grid">
+            <label>
+              <span>Image Width (mm)</span>
+              <input
+                type="number"
+                min="10"
+                max="159.2"
+                step="1"
+                value={
+                  block.imageWidthMm ??
+                  159.2
+                }
+                onChange={(event) =>
+                  setSize(
+                    "width",
+                    Number(
+                      event.target.value,
+                    ),
+                  )
+                }
+              />
+            </label>
+
+            <label>
+              <span>Image Height (mm)</span>
+              <input
+                type="number"
+                min="5"
+                max="60"
+                step="1"
+                value={
+                  block.imageHeightMm ??
+                  30
+                }
+                onChange={(event) =>
+                  setSize(
+                    "height",
+                    Number(
+                      event.target.value,
+                    ),
+                  )
+                }
+              />
+            </label>
+          </div>
+
+          <label className="asb-hf-ratio-row">
+            <input
+              type="checkbox"
+              checked={
+                block.imageLockRatio !==
+                false
+              }
+              onChange={(event) =>
+                onChange({
+                  ...block,
+                  imageLockRatio:
+                    event.target.checked,
+                })
+              }
+            />
+            Lock Aspect Ratio
+          </label>
+
+          <button
+            type="button"
+            className="asb-hf-ratio-button"
+            onClick={applyAspectRatio}
+          >
+            Apply Aspect Ratio
+          </button>
+
+          <div className="asb-hf-note">
+            Left alignment starts at the
+            1-inch safe boundary. Right
+            alignment ends at the 1-inch safe
+            boundary. Maximum image width is
+            159.2 mm.
+          </div>
+        </>
       )}
     </section>
   );

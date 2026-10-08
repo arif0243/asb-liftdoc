@@ -5,6 +5,10 @@ export type ProposalChromeBlock = {
   mode: ProposalChromeMode;
   text: string;
   imageData: string;
+  imageWidthMm?: number;
+  imageHeightMm?: number;
+  imageLockRatio?: boolean;
+  imageAspectRatio?: number;
   align: ProposalChromeAlign;
   heightMm: number;
 };

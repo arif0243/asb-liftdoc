@@ -180,20 +180,61 @@ function cleanChrome(
 
   const height = Number(value?.heightMm);
 
+  const imageWidth = Number(
+    value?.imageWidthMm,
+  );
+
+  const imageHeight = Number(
+    value?.imageHeightMm,
+  );
+
+  const imageRatio = Number(
+    value?.imageAspectRatio,
+  );
+
   return {
     mode,
-    text: stringValue(value?.text, fallback.text),
+    text: stringValue(
+      value?.text,
+      fallback.text,
+    ),
     imageData: stringValue(
       value?.imageData,
       fallback.imageData,
     ),
     align,
+
     heightMm:
       Number.isFinite(height) &&
       height >= 5 &&
       height <= 70
         ? height
         : fallback.heightMm,
+
+    imageWidthMm:
+      Number.isFinite(imageWidth) &&
+      imageWidth >= 10 &&
+      imageWidth <= 159.2
+        ? imageWidth
+        : fallback.imageWidthMm ?? 159.2,
+
+    imageHeightMm:
+      Number.isFinite(imageHeight) &&
+      imageHeight >= 5 &&
+      imageHeight <= 60
+        ? imageHeight
+        : fallback.imageHeightMm ?? 30,
+
+    imageLockRatio:
+      value?.imageLockRatio === undefined
+        ? fallback.imageLockRatio ?? true
+        : Boolean(value.imageLockRatio),
+
+    imageAspectRatio:
+      Number.isFinite(imageRatio) &&
+      imageRatio > 0
+        ? imageRatio
+        : fallback.imageAspectRatio ?? 1,
   };
 }
 
