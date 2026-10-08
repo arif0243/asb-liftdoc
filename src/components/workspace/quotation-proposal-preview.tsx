@@ -242,7 +242,7 @@ body {
 }
 
 .asb-q-cover-block span {
-  font-weight: inherit;
+  font-weight: 700;
 }
 
 .asb-q-cover-block strong {
@@ -267,7 +267,7 @@ body {
   font-family: "Times New Roman", Times, serif;
   font-size: 12pt;
   line-height: 1.3;
-  font-weight: inherit;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -1072,7 +1072,11 @@ export function QuotationProposalPreview() {
                         {preparedFor}
                       </strong>
 
-                      <p>
+                      <p
+                        style={{
+                          fontWeight: 700,
+                        }}
+                      >
                         {preparedForAddress}
                       </p>
                     </div>
