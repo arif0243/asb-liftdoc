@@ -54,7 +54,7 @@ body {
   overflow: auto;
   color: #161b20;
   background: #dfe5ea;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .asb-q-preview.asb-q-embed {
@@ -154,6 +154,7 @@ body {
   padding: 0 25.4mm;
 
   color: #111;
+  font-family: "Times New Roman", Times, serif;
   background: #fff;
   box-shadow: 0 16px 42px rgba(16,32,48,.18);
   page-break-after: always;
@@ -207,15 +208,19 @@ body {
   grid-template-rows: auto 1fr 1fr auto;
   align-items: center;
   text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20pt;
+  line-height: 1.3;
 }
 
 .asb-q-cover h1 {
   max-width: 150mm;
   margin: 8mm auto 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 22pt;
-  line-height: 1.35;
-  font-weight: 500;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20pt;
+  line-height: 1.3;
+  font-weight: inherit;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 
@@ -223,23 +228,31 @@ body {
   display: grid;
   justify-items: center;
   gap: 2mm;
+  text-align: center;
+  font-size: 20pt;
+}
+
+.asb-q-cover-block span,
+.asb-q-cover-block strong,
+.asb-q-cover-block p {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20pt;
+  line-height: 1.3;
+  text-align: center;
 }
 
 .asb-q-cover-block span {
-  font-size: 9.5pt;
-  font-weight: 700;
+  font-weight: inherit;
 }
 
 .asb-q-cover-block strong {
   color: #142c43;
-  font-size: 15pt;
+  font-weight: inherit;
 }
 
 .asb-q-cover-block p {
   max-width: 145mm;
   margin: 0;
-  font-size: 10pt;
-  line-height: 1.4;
   white-space: pre-wrap;
 }
 
@@ -251,8 +264,11 @@ body {
 
 .asb-q-submission {
   padding-bottom: 8mm;
-  font-size: 10pt;
-  font-weight: 700;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20pt;
+  line-height: 1.3;
+  font-weight: inherit;
+  text-align: center;
 }
 
 .asb-q-letter,
@@ -262,7 +278,7 @@ body {
   display: flex;
   flex-direction: column;
   color: #111;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Times New Roman", Times, serif;
   font-size: 10.5pt;
   line-height: 1.42;
 }
@@ -409,6 +425,10 @@ body {
   font-size: 6.5pt;
 }
 
+.asb-q-bold-all,
+.asb-q-bold-all * {
+  font-weight: 700 !important;
+}
 .asb-q-loading {
   min-height: 100%;
   display: flex;
@@ -868,11 +888,15 @@ export function QuotationProposalPreview() {
 
   return (
     <div
-      className={
-        embed
-          ? "asb-q-preview asb-q-embed"
-          : "asb-q-preview"
-      }
+      className={[
+        "asb-q-preview",
+        embed ? "asb-q-embed" : "",
+        proposal.boldAllText
+          ? "asb-q-bold-all"
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <style>{CSS}</style>
 

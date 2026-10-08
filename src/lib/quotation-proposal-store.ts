@@ -94,6 +94,7 @@ export function defaultQuotationProposal(
     pageOverrides: {},
 
     showPageNumber: true,
+    boldAllText: false,
     priceRowsPerPage: 12,
 
     updatedAt: "",
@@ -514,6 +515,11 @@ export async function saveQuotationProposal(
       input.showPageNumber === undefined
         ? true
         : Boolean(input.showPageNumber),
+
+    boldAllText:
+      input.boldAllText === undefined
+        ? fallback.boldAllText ?? false
+        : Boolean(input.boldAllText),
 
     priceRowsPerPage:
       Number.isFinite(rows) &&

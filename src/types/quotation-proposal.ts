@@ -75,6 +75,7 @@ export type QuotationProposal = {
   pageOverrides: Record<string, ProposalPageChromeOverride>;
 
   showPageNumber: boolean;
+  boldAllText?: boolean;
   priceRowsPerPage: number;
 
   updatedAt: string;

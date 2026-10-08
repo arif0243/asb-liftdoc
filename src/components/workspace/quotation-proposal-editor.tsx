@@ -62,6 +62,26 @@ const CSS = `
   font-size: 22px;
 }
 
+.asb-bold-toggle {
+  min-height: 36px;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px !important;
+  padding: 8px 10px;
+  border: 1px solid #ccd8e1;
+  border-radius: 8px;
+  color: #294258;
+  background: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.asb-bold-toggle input {
+  width: auto !important;
+  min-height: auto !important;
+  margin: 0;
+}
 .asb-editor-actions {
   display: flex;
   gap: 8px;
@@ -578,6 +598,7 @@ function fallback(
     defaultFooter: chrome("", 13),
     pageOverrides: {},
     showPageNumber: true,
+    boldAllText: false,
     priceRowsPerPage: 12,
     updatedAt: "",
   };
@@ -1512,6 +1533,20 @@ export function QuotationProposalEditor() {
         </div>
 
         <div className="asb-editor-actions">
+          <label className="asb-bold-toggle">
+            <input
+              type="checkbox"
+              checked={proposal.boldAllText ?? false}
+              onChange={(event) =>
+                setProposal((current) => ({
+                  ...current,
+                  boldAllText:
+                    event.target.checked,
+                }))
+              }
+            />
+            Bold Full Quotation
+          </label>
           <button
             type="button"
             className="asb-btn"
