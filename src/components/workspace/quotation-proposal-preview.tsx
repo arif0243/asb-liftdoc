@@ -256,6 +256,12 @@ body {
   white-space: pre-wrap;
 }
 
+.asb-q-cover-address-regular,
+.asb-q-cover-block p,
+.asb-q-bold-all .asb-q-cover-address-regular,
+.asb-q-bold-all .asb-q-cover-block p {
+  font-weight: 400 !important;
+}
 .asb-q-cover-logo {
   max-width: 100%;
   object-fit: contain;
