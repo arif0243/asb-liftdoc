@@ -370,6 +370,25 @@ const CSS = `
   background: #fff;
 }
 
+.asb-chrome-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.asb-chrome-remove {
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid #e2caca;
+  border-radius: 7px;
+  color: #8a3434;
+  background: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .asb-check {
   display: flex !important;
   align-items: center;
@@ -614,26 +633,39 @@ function ChromeEditor({
           />
         </label>
       )}
+      <div className="asb-chrome-upload-row">
+        <label className="asb-upload">
+          {block.imageData ? "Change Image" : "Upload Image"}
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={upload}
+          />
+        </label>
 
-      {block.mode === "image" && (
-        <>
-          <label className="asb-upload">
-            Upload image
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              onChange={upload}
-            />
-          </label>
+        {block.imageData && (
+          <button
+            type="button"
+            className="asb-chrome-remove"
+            onClick={() =>
+              onChange({
+                ...block,
+                mode: "text",
+                imageData: "",
+              })
+            }
+          >
+            Remove Image
+          </button>
+        )}
+      </div>
 
-          {block.imageData && (
-            <img
-              className="asb-upload-preview"
-              src={block.imageData}
-              alt=""
-            />
-          )}
-        </>
+      {block.imageData && (
+        <img
+          className="asb-upload-preview"
+          src={block.imageData}
+          alt=""
+        />
       )}
     </section>
   );
@@ -1109,13 +1141,21 @@ export function QuotationProposalEditor() {
       <header className="asb-editor-top">
         <div className="asb-editor-title">
           <span>
-            {quotation.quotationNo} Ã‚Â· Rev{" "}
+            {quotation.quotationNo} Ãƒâ€šÃ‚Â· Rev{" "}
             {quotation.revisionNo}
           </span>
           <h1>Proposal Editor</h1>
         </div>
 
         <div className="asb-editor-actions">
+          <button
+            type="button"
+            className="asb-btn"
+            onClick={() => setTab("headerFooter")}
+          >
+            All Page Header & Footer
+          </button>
+
           <button
             type="button"
             className="asb-btn"
@@ -2052,7 +2092,7 @@ export function QuotationProposalEditor() {
             {tab === "headerFooter" && (
               <>
                 <h2>
-                  Header & Footer - Every Page
+                  All Page Header & Footer
                 </h2>
 
                 <div className="asb-info">
@@ -2063,7 +2103,7 @@ export function QuotationProposalEditor() {
                 </div>
 
                 <ChromeEditor
-                  title="Default Header"
+                  title="All Page Header"
                   block={
                     proposal.defaultHeader
                   }
@@ -2078,7 +2118,7 @@ export function QuotationProposalEditor() {
                 />
 
                 <ChromeEditor
-                  title="Default Footer"
+                  title="All Page Footer"
                   block={
                     proposal.defaultFooter
                   }
@@ -2210,8 +2250,8 @@ export function QuotationProposalEditor() {
                 Full Proposal Preview
               </strong>
               <span>
-                Cover Ã¢â€ â€™ Letter Ã¢â€ â€™ Price
-                Page(s) Ã¢â€ â€™ Terms
+                Cover ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Letter ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Price
+                Page(s) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Terms
               </span>
             </div>
           </div>

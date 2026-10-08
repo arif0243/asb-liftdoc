@@ -129,7 +129,7 @@ const CSS = `
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 10mm 15mm 10mm;
+  padding: 10mm 25.4mm 10mm;
   background: #fff;
   box-shadow: 0 16px 42px rgba(16,32,48,.18);
   page-break-after: always;
@@ -182,7 +182,7 @@ const CSS = `
 
 .asb-q-cover h1 {
   margin: 8mm auto 0;
-  max-width: 155mm;
+  max-width: 150mm;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 22pt;
   line-height: 1.35;
@@ -213,7 +213,7 @@ const CSS = `
 }
 
 .asb-q-cover-block p {
-  max-width: 130mm;
+  max-width: 145mm;
   margin: 0;
   font-size: 10pt;
   line-height: 1.4;
@@ -374,7 +374,7 @@ const CSS = `
 
 .asb-q-page-no {
   position: absolute;
-  right: 15mm;
+  right: 25.4mm;
   bottom: 3.5mm;
   color: #7f8992;
   font-size: 6.5pt;
@@ -815,11 +815,11 @@ export function QuotationProposalPreview() {
 
           <div className="asb-q-toolbar-title">
             <strong>
-              {quotation.quotationNo} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Rev{" "}
+              {quotation.quotationNo} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Rev{" "}
               {quotation.revisionNo}
             </strong>
             <span>
-              Full Proposal Preview ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
+              Full Proposal Preview ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
               {pages.length} pages
             </span>
           </div>
