@@ -209,7 +209,7 @@ body {
   align-items: center;
   text-align: center;
   font-family: "Times New Roman", Times, serif;
-  font-size: 20pt;
+  font-size: 12pt;
   line-height: 1.3;
 }
 
@@ -229,14 +229,14 @@ body {
   justify-items: center;
   gap: 2mm;
   text-align: center;
-  font-size: 20pt;
+  font-size: 12pt;
 }
 
 .asb-q-cover-block span,
 .asb-q-cover-block strong,
 .asb-q-cover-block p {
   font-family: "Times New Roman", Times, serif;
-  font-size: 20pt;
+  font-size: 12pt;
   line-height: 1.3;
   text-align: center;
 }
@@ -265,7 +265,7 @@ body {
 .asb-q-submission {
   padding-bottom: 8mm;
   font-family: "Times New Roman", Times, serif;
-  font-size: 20pt;
+  font-size: 12pt;
   line-height: 1.3;
   font-weight: inherit;
   text-align: center;
