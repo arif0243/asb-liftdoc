@@ -247,7 +247,7 @@ body {
 
 .asb-q-cover-block strong {
   color: #142c43;
-  font-weight: inherit;
+  font-weight: 700;
 }
 
 .asb-q-cover-block p {
