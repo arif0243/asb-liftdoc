@@ -245,7 +245,7 @@ export async function getQuotationProposal(
     ) ??
     defaultQuotationProposal(
       quotationId,
-      quotation.title,
+      quotation.subject || "Financial Proposal",
       quotation.subject,
     )
   );
@@ -278,7 +278,7 @@ export async function saveQuotationProposal(
 
   const fallback = defaultQuotationProposal(
     quotationId,
-    quotation.title,
+    quotation.subject || "Financial Proposal",
     quotation.subject,
   );
 

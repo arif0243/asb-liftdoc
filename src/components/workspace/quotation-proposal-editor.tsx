@@ -29,6 +29,198 @@ import {
 } from "@/components/workspace/quotation-proposal-renderer";
 import styles from "./quotation-proposal-editor.module.css";
 
+const EDITOR_FALLBACK_CSS = `
+.${styles.page}{display:grid;gap:14px}
+.${styles.heading}{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.${styles.heading}>div{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+.${styles.heading} a,
+.${styles.actions} a,
+.${styles.actions} button{
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 10px;
+  border:1px solid #ccd8e1;
+  border-radius:8px;
+  color:#294258;
+  background:#fff;
+  text-decoration:none;
+  font-size:9px;
+  font-weight:800;
+  cursor:pointer;
+}
+.${styles.heading} span{
+  color:#718391;
+  font-size:8px;
+  font-weight:800;
+}
+.${styles.heading} h1{
+  margin:3px 0 0;
+  color:#173047;
+  font-size:22px;
+}
+.${styles.actions}{display:flex;gap:8px}
+.${styles.actions} button{
+  color:#fff;
+  border-color:#153e62;
+  background:#153e62;
+}
+.${styles.workspace}{
+  display:grid;
+  grid-template-columns:minmax(400px,520px) minmax(0,1fr);
+  gap:15px;
+  align-items:start;
+}
+.${styles.editor}{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #dbe4eb;
+  border-radius:13px;
+  background:#fff;
+}
+.${styles.tabs}{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  border-bottom:1px solid #dce4eb;
+  background:#f8fafc;
+}
+.${styles.tabs} button{
+  min-height:44px;
+  padding:7px;
+  border:0;
+  border-right:1px solid #e3e9ee;
+  color:#66798a;
+  background:transparent;
+  font-size:7.5px;
+  font-weight:800;
+  cursor:pointer;
+}
+.${styles.activeTab}{
+  color:#153e62!important;
+  background:#fff!important;
+  box-shadow:inset 0 -2px #153e62;
+}
+.${styles.panel}{
+  max-height:calc(100vh - 205px);
+  overflow-y:auto;
+  display:grid;
+  gap:11px;
+  padding:14px;
+}
+.${styles.panel} h2{
+  margin:0 0 2px;
+  color:#173047;
+  font-size:14px;
+}
+.${styles.panel} label,
+.${styles.chromeCard} label{
+  display:grid;
+  gap:5px;
+}
+.${styles.panel} label>span,
+.${styles.chromeCard} label>span{
+  color:#65798a;
+  font-size:8px;
+  font-weight:800;
+}
+.${styles.panel} input,
+.${styles.panel} select,
+.${styles.panel} textarea,
+.${styles.chromeCard} input,
+.${styles.chromeCard} select,
+.${styles.chromeCard} textarea{
+  width:100%;
+  min-height:36px;
+  padding:8px;
+  border:1px solid #ccd7e0;
+  border-radius:7px;
+  box-sizing:border-box;
+  color:#263f55;
+  background:#fff;
+  font-size:9px;
+}
+.${styles.grid3}{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.${styles.infoBox}{
+  padding:10px;
+  border:1px solid #d8e2ea;
+  border-radius:8px;
+  color:#5f7282;
+  background:#f7fafc;
+  font-size:8px;
+  line-height:1.5;
+}
+.${styles.chromeCard}{
+  display:grid;
+  gap:9px;
+  padding:11px;
+  border:1px solid #dce5ec;
+  border-radius:9px;
+  background:#f8fafc;
+}
+.${styles.preview}{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #d8e1e8;
+  border-radius:13px;
+  background:#e9edf1;
+}
+.${styles.previewTitle}{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid #d6dee5;
+  background:#f8fafc;
+}
+.${styles.previewScale}{
+  max-height:calc(100vh - 205px);
+  overflow:auto;
+  padding:20px;
+}
+.${styles.previewScale}>div{zoom:.55}
+.${styles.items}{display:grid;gap:5px}
+.${styles.items}>div{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:7px 8px;
+  border:1px solid #e1e7ed;
+  border-radius:7px;
+  font-size:8px;
+}
+.${styles.overrideChecks}{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.${styles.loading}{
+  min-height:300px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#718291;
+}
+@media(max-width:1200px){
+  .${styles.workspace}{grid-template-columns:1fr}
+  .${styles.panel},
+  .${styles.previewScale}{max-height:none}
+}
+`;
 type Payload = {
   quotations: Quotation[];
   clients: Client[];
@@ -433,6 +625,7 @@ export function QuotationProposalEditor() {
 
   return (
     <div className={styles.page}>
+      <style>{EDITOR_FALLBACK_CSS}</style>
       <header className={styles.heading}>
         <div>
           <a href="/quotations">
@@ -442,7 +635,7 @@ export function QuotationProposalEditor() {
 
           <div>
             <span>
-              {quotation.quotationNo} Â· Rev{" "}
+              {quotation.quotationNo} Ã‚Â· Rev{" "}
               {quotation.revisionNo}
             </span>
             <h1>Proposal Editor</h1>
@@ -1290,8 +1483,8 @@ export function QuotationProposalEditor() {
               Live multi-page preview
             </strong>
             <span>
-              Cover â†’ Letter â†’ Price
-              Page(s) â†’ Terms
+              Cover Ã¢â€ â€™ Letter Ã¢â€ â€™ Price
+              Page(s) Ã¢â€ â€™ Terms
             </span>
           </div>
 

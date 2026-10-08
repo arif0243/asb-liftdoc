@@ -11,6 +11,226 @@ import type {
 } from "@/types/quotation-proposal";
 import styles from "./quotation-proposal-renderer.module.css";
 
+const PROPOSAL_FALLBACK_CSS = `
+.${styles.stack}{
+  display:grid;
+  justify-items:center;
+  gap:28px;
+}
+.${styles.paper}{
+  position:relative;
+  width:210mm;
+  height:297mm;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  padding:10mm 14mm 9mm;
+  color:#191d21;
+  background:#fff;
+  box-shadow:0 14px 42px rgba(20,35,50,.14);
+  font-family:Arial,Helvetica,sans-serif;
+}
+.${styles.header},
+.${styles.footer}{
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  white-space:pre-wrap;
+  font-size:8.5pt;
+}
+.${styles.header}{
+  border-bottom:.25mm solid #d4d9de;
+}
+.${styles.footer}{
+  margin-top:auto;
+  border-top:.25mm solid #d4d9de;
+}
+.${styles.header} img,
+.${styles.footer} img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+.${styles.body}{
+  flex:1 1 auto;
+  min-height:0;
+  padding-top:5mm;
+}
+.${styles.cover}{
+  height:100%;
+  display:grid;
+  grid-template-rows:auto 1fr 1fr auto;
+  align-items:center;
+  text-align:center;
+}
+.${styles.cover} h1{
+  margin:10mm 0 0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:22pt;
+  font-weight:500;
+}
+.${styles.coverPrepared}{
+  display:grid;
+  gap:2mm;
+}
+.${styles.coverPrepared} span{
+  font-size:9pt;
+  font-weight:700;
+}
+.${styles.coverPrepared} strong{
+  font-size:15pt;
+}
+.${styles.coverPrepared} p{
+  margin:0;
+  font-size:10pt;
+  white-space:pre-wrap;
+}
+.${styles.submission}{
+  padding-bottom:7mm;
+  font-size:10pt;
+  font-weight:700;
+}
+.${styles.letter},
+.${styles.price},
+.${styles.terms}{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:10.5pt;
+  line-height:1.42;
+}
+.${styles.dateRight}{
+  margin-bottom:7mm;
+  text-align:right;
+}
+.${styles.toBlock}{
+  display:grid;
+  gap:.7mm;
+  margin-bottom:9mm;
+}
+.${styles.letterSubject}{
+  margin-bottom:5mm;
+}
+.${styles.letterSubject} span{
+  font-weight:700;
+  text-decoration:underline;
+}
+.${styles.preWrap}{
+  white-space:pre-wrap;
+}
+.${styles.letter} h3{
+  margin:7mm 0 2mm;
+  font-size:10.5pt;
+  text-decoration:underline;
+}
+.${styles.signature}{
+  width:fit-content;
+  display:grid;
+  gap:.5mm;
+  margin-top:auto;
+  padding-bottom:8mm;
+}
+.${styles.signature} strong{
+  min-height:10mm;
+}
+.${styles.price} h2,
+.${styles.terms} h2{
+  margin:0 0 5mm;
+  font-size:13pt;
+  text-align:center;
+  text-decoration:underline;
+}
+.${styles.terms} h2{
+  text-align:left;
+}
+.${styles.table}{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+.${styles.table} th,
+.${styles.table} td{
+  padding:1.7mm;
+  border:.25mm solid #222;
+  vertical-align:top;
+  font-size:8.3pt;
+  line-height:1.25;
+}
+.${styles.table} th{
+  font-weight:700;
+  text-align:center;
+}
+.${styles.table} th:nth-child(1),
+.${styles.table} td:nth-child(1){
+  width:8mm;
+  text-align:center;
+}
+.${styles.table} th:nth-child(3),
+.${styles.table} td:nth-child(3){
+  width:25mm;
+  text-align:center;
+}
+.${styles.table} th:nth-child(4),
+.${styles.table} td:nth-child(4),
+.${styles.table} th:nth-child(5),
+.${styles.table} td:nth-child(5){
+  width:29mm;
+  text-align:right;
+}
+.${styles.amountRow}{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:6mm;
+  align-items:center;
+  padding:2.5mm;
+  border:.25mm solid #222;
+  border-top:0;
+  font-size:9pt;
+}
+.${styles.amountRow}>div{
+  display:flex;
+  gap:5mm;
+  align-items:center;
+}
+.${styles.continued}{
+  margin-top:auto;
+  padding-bottom:8mm;
+  color:#6d7680;
+  text-align:right;
+  font-style:italic;
+}
+.${styles.termGrid}{
+  display:grid;
+  grid-template-columns:31mm 1fr;
+  gap:4mm 7mm;
+  margin-top:3mm;
+}
+.${styles.termGrid} strong{
+  text-align:right;
+}
+.${styles.pageNumber}{
+  position:absolute;
+  right:14mm;
+  bottom:3.5mm;
+  color:#8b949c;
+  font-size:6.5pt;
+}
+@media print{
+  .${styles.stack}{display:block}
+  .${styles.paper}{
+    margin:0;
+    box-shadow:none;
+    break-after:page;
+    page-break-after:always;
+  }
+  .${styles.paper}:last-child{
+    break-after:auto;
+    page-break-after:auto;
+  }
+}
+`;
 type PageDescriptor = {
   key: string;
   kind: "cover" | "letter" | "price" | "terms";
@@ -265,6 +485,8 @@ export function QuotationProposalRenderer({
         compact ? styles.compact : ""
       }`}
     >
+      <style>{PROPOSAL_FALLBACK_CSS}</style>
+
       {pages.map((page, pageIndex) => {
         const header = effectiveChrome(
           page.key,
@@ -315,6 +537,7 @@ export function QuotationProposalRenderer({
                     <strong>
                       {proposal.cover.preparedFor ||
                         project?.name ||
+                        quotation.title ||
                         client?.name ||
                         "Client"}
                     </strong>
@@ -360,6 +583,7 @@ export function QuotationProposalRenderer({
                     </strong>
                     <span>
                       {project?.name ||
+                        quotation.title ||
                         client?.name ||
                         ""}
                     </span>
