@@ -596,6 +596,12 @@ function ChromeEditor({
   block,
   onChange,
 }: ChromeEditorProps) {
+  const isFooter =
+    title.toLowerCase().includes("footer");
+
+  const edgeLabel = isFooter
+    ? "Footer distance from bottom edge (mm)"
+    : "Header distance from top edge (mm)";
   const MAX_WIDTH_MM = 159.2;
 
   const upload = (
@@ -847,6 +853,29 @@ function ChromeEditor({
           ))}
         </div>
       </div>
+
+      <label>
+        <span>{edgeLabel}</span>
+        <input
+          type="number"
+          min="0"
+          max="40"
+          step="1"
+          value={block.pageEdgeGapMm ?? 10}
+          onChange={(event) =>
+            onChange({
+              ...block,
+              pageEdgeGapMm: Math.max(
+                0,
+                Math.min(
+                  40,
+                  Number(event.target.value) || 0,
+                ),
+              ),
+            })
+          }
+        />
+      </label>
 
       <label>
         <span>Header / Footer Area Height (mm)</span>

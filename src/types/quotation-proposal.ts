@@ -11,6 +11,7 @@ export type ProposalChromeBlock = {
   imageAspectRatio?: number;
   align: ProposalChromeAlign;
   heightMm: number;
+  pageEdgeGapMm?: number;
 };
 
 export type ProposalPageChromeOverride = {

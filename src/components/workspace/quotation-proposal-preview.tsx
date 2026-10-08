@@ -151,7 +151,7 @@ body {
   overflow: hidden;
 
   /* Fixed 1 inch blank area at left and right */
-  padding: 10mm 25.4mm 10mm;
+  padding: 0 25.4mm;
 
   color: #111;
   background: #fff;
@@ -694,6 +694,14 @@ function Chrome({
       className={className}
       style={{
         minHeight: `${areaHeight}mm`,
+        marginTop:
+          className === "asb-q-header"
+            ? `${value.pageEdgeGapMm ?? 10}mm`
+            : undefined,
+        marginBottom:
+          className === "asb-q-footer"
+            ? `${value.pageEdgeGapMm ?? 10}mm`
+            : undefined,
         justifyContent:
           value.align === "left"
             ? "flex-start"

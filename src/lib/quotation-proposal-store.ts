@@ -204,6 +204,14 @@ function cleanChrome(
     ),
     align,
 
+    pageEdgeGapMm:
+      Number.isFinite(
+        Number(value?.pageEdgeGapMm),
+      ) &&
+      Number(value?.pageEdgeGapMm) >= 0 &&
+      Number(value?.pageEdgeGapMm) <= 40
+        ? Number(value?.pageEdgeGapMm)
+        : fallback.pageEdgeGapMm ?? 10,
     heightMm:
       Number.isFinite(height) &&
       height >= 5 &&
