@@ -445,6 +445,100 @@ body {
   font-size: 14px;
 }
 
+/* ASB_EXACT_A4_START */
+
+/*
+  Physical A4 size:
+  width  = 210mm
+  height = 297mm
+
+  IMPORTANT:
+  border-box prevents the 25.4mm left/right safe-zone padding
+  from making the physical page wider than 210mm.
+*/
+.asb-q-page {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+
+  height: 297mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+
+  aspect-ratio: 210 / 297 !important;
+  box-sizing: border-box !important;
+
+  padding-left: 25.4mm !important;
+  padding-right: 25.4mm !important;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.asb-q-page,
+.asb-q-page *,
+.asb-q-page *::before,
+.asb-q-page *::after {
+  box-sizing: border-box;
+}
+
+@page {
+  size: 210mm 297mm;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .asb-q-preview,
+  .asb-q-pages {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    background: #fff !important;
+  }
+
+  .asb-q-page {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+
+    transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  .asb-q-page:last-child {
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+}
+
+/* ASB_EXACT_A4_END */
 @media print {
   .asb-q-print-no-chrome .asb-q-header,
   .asb-q-print-no-chrome .asb-q-footer {
@@ -454,11 +548,6 @@ body {
   .asb-q-print-no-chrome .asb-q-page {
     padding-top: 10mm;
     padding-bottom: 10mm;
-  }
-
-  @page {
-    size: A4 portrait;
-    margin: 0;
   }
 
   html,
