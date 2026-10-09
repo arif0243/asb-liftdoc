@@ -733,6 +733,90 @@ max-height: 297mm !important;
 }
 
 /* ASB_LETTER_SIGNER_COMPACT_FINAL_END */
+
+
+/* ASB_LETTER_CSS_ONLY_FINAL_START */
+
+/*
+  Keep the Signature upload button in the editor,
+  but do not place the uploaded image above the signer name.
+*/
+.asb-q-letter-signature-image {
+  display: none !important;
+}
+
+/*
+  Remove extra space around the Letter signer block.
+*/
+.asb-q-letter .asb-q-signature,
+.asb-q-letter-signature,
+.asb-q-signature.asb-q-letter-signature {
+  gap: 0 !important;
+  row-gap: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.asb-q-letter .asb-q-signature > *,
+.asb-q-letter-signature > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.asb-q-letter .asb-q-signature strong,
+.asb-q-letter-signature strong {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+
+.asb-q-letter .asb-q-signature strong + *,
+.asb-q-letter-signature strong + * {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/*
+  Justify Letter body.
+  Multiple scoped selectors are included because the current renderer
+  has changed markup across the previous quotation patches.
+*/
+.asb-q-letter .asb-q-copy,
+.asb-q-letter .asb-q-copy p,
+.asb-q-letter .asb-q-letter-body,
+.asb-q-letter .asb-q-letter-body p,
+.asb-q-letter .asb-q-body-copy,
+.asb-q-letter .asb-q-body-copy p,
+.asb-q-letter-body,
+.asb-q-letter-body p {
+  width: 100% !important;
+  text-align: justify !important;
+  text-justify: inter-word !important;
+  white-space: pre-wrap !important;
+}
+
+/*
+  Justify Technical Details only, not the heading.
+*/
+.asb-q-letter .asb-q-technical p,
+.asb-q-letter .asb-q-technical-details,
+.asb-q-letter .asb-q-technical-details p,
+.asb-q-letter-technical-details,
+.asb-q-letter-technical-details p,
+.asb-q-technical-details,
+.asb-q-technical-details p {
+  width: 100% !important;
+  text-align: justify !important;
+  text-justify: inter-word !important;
+  white-space: pre-wrap !important;
+}
+
+/* ASB_LETTER_CSS_ONLY_FINAL_END */
 `;
 
 function money(value: number) {
