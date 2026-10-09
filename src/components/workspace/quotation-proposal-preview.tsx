@@ -143,9 +143,18 @@ body {
 }
 
 .asb-q-page {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+
+  height: 297mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+
+  aspect-ratio: 210 / 297 !important;
+  box-sizing: border-box !important;
   position: relative;
-  width: 210mm;
-  height: 297mm;
+height: 297mm;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -467,6 +476,11 @@ body {
 
   aspect-ratio: 210 / 297 !important;
   box-sizing: border-box !important;
+min-width: 210mm !important;
+height: 297mm !important;
+max-height: 297mm !important;
+
+box-sizing: border-box !important;
 
   padding-left: 25.4mm !important;
   padding-right: 25.4mm !important;
@@ -485,6 +499,7 @@ body {
 @page {
   size: 210mm 297mm;
   margin: 0;
+margin: 0;
 }
 
 @media print {
@@ -517,6 +532,12 @@ body {
     height: 297mm !important;
     min-height: 297mm !important;
     max-height: 297mm !important;
+
+    aspect-ratio: 210 / 297 !important;
+    box-sizing: border-box !important;
+min-width: 210mm !important;
+height: 297mm !important;
+max-height: 297mm !important;
 
     margin: 0 !important;
     box-shadow: none !important;
@@ -923,8 +944,9 @@ function printQuotationOnly() {
 ${inheritedStyles}
 <style>
   @page {
-    size: A4 portrait;
+    size: 210mm 297mm;
     margin: 0;
+margin: 0;
   }
 
   html,
@@ -975,8 +997,13 @@ ${inheritedStyles}
     min-height: 297mm !important;
     max-height: 297mm !important;
 
+    aspect-ratio: 210 / 297 !important;
     box-sizing: border-box !important;
-    margin: 0 !important;
+min-width: 210mm !important;
+height: 297mm !important;
+max-height: 297mm !important;
+
+margin: 0 !important;
     box-shadow: none !important;
     border: 0 !important;
 
@@ -1259,12 +1286,18 @@ export function QuotationProposalPreview() {
   min-height: 297mm !important;
   max-height: 297mm !important;
 
+  aspect-ratio: 210 / 297 !important;
   box-sizing: border-box !important;
+min-width: 210mm !important;
+height: 297mm !important;
+max-height: 297mm !important;
+
 }
 
 @page {
   size: 210mm 297mm;
   margin: 0;
+margin: 0;
 }
 
 @media print {
@@ -1277,7 +1310,12 @@ export function QuotationProposalPreview() {
     min-height: 297mm !important;
     max-height: 297mm !important;
 
+    aspect-ratio: 210 / 297 !important;
     box-sizing: border-box !important;
+min-width: 210mm !important;
+height: 297mm !important;
+max-height: 297mm !important;
+
   }
 
   /*
