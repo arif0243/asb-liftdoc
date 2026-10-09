@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useEffect as useAsbLivePreviewEffect } from "react";
 import {
   Edit3,
   Printer,
@@ -876,6 +878,111 @@ max-height: 297mm !important;
 }
 
 /* ASB_LETTER_SIGNATURE_VISIBLE_FINAL_END */
+
+/* ASB_MOVABLE_SIGNATURE_CURRENT_START */
+
+/*
+  Scoped only to the movable Letter signer wrapper.
+  Existing signer markup remains untouched inside the wrapper.
+*/
+[data-asb-movable-letter-signature="true"] {
+  pointer-events: none;
+}
+
+[data-asb-movable-letter-signature="true"] .asb-q-letter-signature-image,
+[data-asb-movable-letter-signature="true"] img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: 18mm !important;
+  object-fit: contain !important;
+  object-position: left bottom !important;
+}
+
+/* ASB_MOVABLE_SIGNATURE_CURRENT_END */
+
+/* ASB_SIGNATURE_NAME_DESIGNATION_GAP_FINAL_START */
+
+/*
+  Strictly scoped to the movable Letter signature box.
+  Removes the old signature-container spacing above Designation.
+*/
+[data-asb-movable-letter-signature="true"] {
+  gap: 0 !important;
+  row-gap: 0 !important;
+}
+
+[data-asb-movable-letter-signature="true"] > div {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  row-gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-asb-movable-letter-signature="true"] strong,
+[data-asb-movable-letter-signature="true"] span {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+
+[data-asb-movable-letter-signature="true"] strong + span,
+[data-asb-movable-letter-signature="true"] span + span {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+[data-asb-movable-letter-signature="true"] .asb-q-letter-signature-image {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 0 1mm 0 !important;
+}
+
+/* ASB_SIGNATURE_NAME_DESIGNATION_GAP_FINAL_END */
+
+
+/* ASB_SIGNATURE_EXACT_GAP_FIX_START */
+
+/*
+  Letter movable signature box only.
+  Remove the reserved height that was creating the Name -> Designation gap.
+*/
+[data-asb-movable-letter-signature="true"] .asb-q-signature {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  row-gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+[data-asb-movable-letter-signature="true"] .asb-q-signature strong {
+  display: block !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+
+[data-asb-movable-letter-signature="true"] .asb-q-signature span {
+  display: block !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+
+/* ASB_SIGNATURE_EXACT_GAP_FIX_END */
 `;
 
 function money(value: number) {
@@ -1337,8 +1444,7 @@ ${source.outerHTML}
     { once: true },
   );
 }
-export function QuotationProposalPreview() {
-  const searchParams = useSearchParams();
+export function QuotationProposalPreview() {const searchParams = useSearchParams();
 
   const quotationId =
     searchParams.get("id") ?? "";
@@ -1351,6 +1457,88 @@ export function QuotationProposalPreview() {
 
   const [proposal, setProposal] =
     useState<QuotationProposal | null>(null);
+
+/* ASB_LIVE_PROPOSAL_RECEIVER_START */
+
+  useAsbLivePreviewEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const receiveLiveProposal = (
+      event: MessageEvent,
+    ) => {
+      if (
+        event.origin !==
+        window.location.origin
+      ) {
+        return;
+      }
+
+      const livePayload =
+        event.data as {
+          type?: string;
+          proposal?: QuotationProposal;
+          quotation?: Quotation | null;
+        };
+
+      if (
+        livePayload?.type !==
+        "ASB_LIFTDOC_LIVE_PROPOSAL"
+      ) {
+        return;
+      }
+
+      if (livePayload.proposal) {
+        setProposal({
+          ...livePayload.proposal,
+        });
+      }
+
+      if (livePayload.quotation) {
+        const nextQuotation =
+          livePayload.quotation;
+
+        setPayload((current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            quotations:
+              current.quotations.map(
+                (record) =>
+                  record.id ===
+                  nextQuotation.id
+                    ? {
+                        ...nextQuotation,
+                        items:
+                          nextQuotation.items.map(
+                            (item) => ({
+                              ...item,
+                            }),
+                          ),
+                      }
+                    : record,
+              ),
+          };
+        });
+      }
+    };
+
+    window.addEventListener(
+      "message",
+      receiveLiveProposal,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "message",
+        receiveLiveProposal,
+      );
+    };
+  }, []);
+
+  /* ASB_LIVE_PROPOSAL_RECEIVER_END */
+
+
 
   const [loading, setLoading] =
     useState(Boolean(quotationId));
@@ -1786,8 +1974,27 @@ export function QuotationProposalPreview() {
                       </>
                     )}
 
+                    <div                       data-asb-movable-letter-signature="true"                       style={{                         position: "absolute",                         left: `${proposal.letter.signatureBoxXMm ?? 25}mm`,                         top: `${proposal.letter.signatureBoxYMm ?? 250}mm`,                         width: `${proposal.letter.signatureBoxWidthMm ?? 65}mm`,                         zIndex: 5,                         margin: 0,                         padding: 0,                       }}                     >
                     <div className="asb-q-signature">
-                      <strong>
+                                            {proposal.letter.signatureImageData ? (
+                        <img
+                          className="asb-q-letter-signature-image"
+                          src={proposal.letter.signatureImageData}
+                          alt=""
+                          style={{
+                            display: "block",
+                            width: `${proposal.letter.signatureImageWidthMm ?? 32}mm`,
+                            maxWidth: "100%",
+                            height: "auto",
+                            maxHeight: "18mm",
+                            objectFit: "contain",
+                            objectPosition: "left bottom",
+                            margin: "0 0 1mm 0",
+                            padding: 0,
+                          }}
+                        />
+                      ) : null}
+<strong>
                         {
                           proposal.letter
                             .signerName
@@ -1805,6 +2012,7 @@ export function QuotationProposalPreview() {
                             .signerCompany
                         }
                       </span>
+                    </div>
                     </div>
                   </section>
                 )}
@@ -1901,8 +2109,27 @@ export function QuotationProposalPreview() {
                           </div>
                         </div>
 
+                        <div                           data-asb-movable-letter-signature="true"                           style={{                             position: "absolute",                             left: `${proposal.letter.signatureBoxXMm ?? 25}mm`,                             top: `${proposal.letter.signatureBoxYMm ?? 250}mm`,                             width: `${proposal.letter.signatureBoxWidthMm ?? 65}mm`,                             zIndex: 5,                             margin: 0,                             padding: 0,                           }}                         >
                         <div className="asb-q-signature">
-                          <strong>
+                                                    {proposal.letter.signatureImageData ? (
+                            <img
+                              className="asb-q-letter-signature-image"
+                              src={proposal.letter.signatureImageData}
+                              alt=""
+                              style={{
+                                display: "block",
+                                width: `${proposal.letter.signatureImageWidthMm ?? 32}mm`,
+                                maxWidth: "100%",
+                                height: "auto",
+                                maxHeight: "18mm",
+                                objectFit: "contain",
+                                objectPosition: "left bottom",
+                                margin: "0 0 1mm 0",
+                                padding: 0,
+                              }}
+                            />
+                          ) : null}
+<strong>
                             {
                               proposal.letter
                                 .signerName
@@ -1920,6 +2147,7 @@ export function QuotationProposalPreview() {
                                 .signerCompany
                             }
                           </span>
+                        </div>
                         </div>
                       </>
                     ) : (

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useEffect as useAsbSplitPreviewEffect } from "react";
 import {
   Eye,
   Save,
@@ -613,6 +615,10 @@ function fallback(
         "Technical Satisfactory Details",
       technicalDetails: "",
       signatureImageData: "",
+      signatureBoxXMm: 25,
+      signatureBoxYMm: 250,
+      signatureBoxWidthMm: 65,
+      signatureImageWidthMm: 32,
       signerName: "",
       signerDesignation: "",
       signerCompany: "ASB Lift",
@@ -1150,6 +1156,412 @@ export function QuotationProposalEditor() {
     useState<QuotationProposal>(() =>
       fallback(quotationId),
     );
+  /* ASB_RESIZABLE_LIVE_PREVIEW_START */
+
+  useAsbSplitPreviewEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const sendLiveProposal = () => {
+      const targetFrame =
+        document.querySelector<HTMLIFrameElement>(
+          'iframe[data-asb-live-proposal-frame="true"]',
+        );
+
+      const liveQuotation =
+        payload?.quotations.find(
+          (record) =>
+            record.id === quotationId,
+        ) ?? null;
+
+      targetFrame?.contentWindow?.postMessage(
+        {
+          type: "ASB_LIFTDOC_LIVE_PROPOSAL",
+          proposal,
+          quotation: liveQuotation,
+        },
+        window.location.origin,
+      );
+    };
+
+    const frame =
+      document.querySelector<HTMLIFrameElement>(
+        'iframe[data-asb-live-proposal-frame="true"]',
+      );
+
+    const handleFrameLoad = () => {
+      sendLiveProposal();
+    };
+
+    frame?.addEventListener(
+      "load",
+      handleFrameLoad,
+    );
+
+    sendLiveProposal();
+
+    const retryOne = window.setTimeout(
+      sendLiveProposal,
+      150,
+    );
+
+    const retryTwo = window.setTimeout(
+      sendLiveProposal,
+      800,
+    );
+
+    return () => {
+      frame?.removeEventListener(
+        "load",
+        handleFrameLoad,
+      );
+
+      window.clearTimeout(retryOne);
+      window.clearTimeout(retryTwo);
+    };
+  }, [proposal, payload, quotationId]);
+
+  useAsbSplitPreviewEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let destroyed = false;
+    let cleanup: (() => void) | undefined;
+
+    const setup = () => {
+      if (destroyed || cleanup) return true;
+
+      const frame = document.querySelector<HTMLIFrameElement>(
+        'iframe[data-asb-live-proposal-frame="true"]',
+      );
+
+      if (!frame) return false;
+
+      let previewPane: HTMLElement | null =
+        frame.parentElement;
+
+      let splitParent: HTMLElement | null = null;
+      let editorPane: HTMLElement | null = null;
+
+      while (previewPane?.parentElement) {
+        const parent =
+          previewPane.parentElement as HTMLElement;
+
+        const children = Array.from(
+          parent.children,
+        ) as HTMLElement[];
+
+        if (
+          children.length === 2 &&
+          previewPane.textContent?.includes(
+            "Full Proposal Preview",
+          )
+        ) {
+          const other =
+            children.find(
+              (item) => item !== previewPane,
+            ) ?? null;
+
+          if (other) {
+            splitParent = parent;
+            editorPane = other;
+            break;
+          }
+        }
+
+        previewPane = parent;
+      }
+
+      if (
+        !splitParent ||
+        !editorPane ||
+        !previewPane
+      ) {
+        return false;
+      }
+
+      const originalParent =
+        splitParent.getAttribute("style");
+      const originalEditor =
+        editorPane.getAttribute("style");
+      const originalPreview =
+        previewPane.getAttribute("style");
+
+      const saved = Number(
+        window.localStorage.getItem(
+          "asb-liftdoc-proposal-editor-width",
+        ),
+      );
+
+      let percent =
+        Number.isFinite(saved) &&
+        saved >= 30 &&
+        saved <= 70
+          ? saved
+          : 50;
+
+      const handle =
+        document.createElement("div");
+
+      handle.setAttribute(
+        "data-asb-proposal-splitter",
+        "true",
+      );
+      handle.setAttribute("role", "separator");
+      handle.setAttribute(
+        "aria-label",
+        "Resize Proposal Editor and Full Proposal Preview",
+      );
+      handle.tabIndex = 0;
+
+      Object.assign(handle.style, {
+        position: "fixed",
+        width: "10px",
+        cursor: "col-resize",
+        userSelect: "none",
+        touchAction: "none",
+        zIndex: "999",
+      });
+
+      const grip =
+        document.createElement("div");
+
+      Object.assign(grip.style, {
+        position: "absolute",
+        left: "4px",
+        top: "8px",
+        bottom: "8px",
+        width: "2px",
+        borderRadius: "999px",
+        background: "currentColor",
+        opacity: "0.3",
+        pointerEvents: "none",
+      });
+
+      handle.appendChild(grip);
+      document.body.appendChild(handle);
+
+      const positionHandle = () => {
+        const parentRect =
+          splitParent!.getBoundingClientRect();
+        const editorRect =
+          editorPane!.getBoundingClientRect();
+
+        handle.style.left =
+          `${editorRect.right - 5}px`;
+        handle.style.top =
+          `${parentRect.top}px`;
+        handle.style.height =
+          `${parentRect.height}px`;
+
+        handle.style.display =
+          parentRect.width >= 760
+            ? "block"
+            : "none";
+      };
+
+      const apply = (next: number) => {
+        percent = Math.max(
+          30,
+          Math.min(70, next),
+        );
+
+        splitParent!.style.display = "grid";
+        splitParent!.style.gridTemplateColumns =
+          `${percent}% minmax(0, 1fr)`;
+        splitParent!.style.columnGap = "0";
+        splitParent!.style.alignItems = "stretch";
+
+        editorPane!.style.width = "auto";
+        editorPane!.style.minWidth = "0";
+        previewPane!.style.width = "auto";
+        previewPane!.style.minWidth = "0";
+
+        handle.setAttribute(
+          "aria-valuenow",
+          String(Math.round(percent)),
+        );
+
+        window.requestAnimationFrame(
+          positionHandle,
+        );
+      };
+
+      apply(percent);
+
+      let dragging = false;
+
+      const fromClientX = (
+        clientX: number,
+      ) => {
+        const rect =
+          splitParent!.getBoundingClientRect();
+
+        if (rect.width <= 0) return;
+
+        apply(
+          ((clientX - rect.left) /
+            rect.width) *
+            100,
+        );
+      };
+
+      const down = (event: PointerEvent) => {
+        dragging = true;
+        document.body.style.cursor =
+          "col-resize";
+        document.body.style.userSelect =
+          "none";
+        fromClientX(event.clientX);
+      };
+
+      const move = (event: PointerEvent) => {
+        if (!dragging) return;
+        event.preventDefault();
+        fromClientX(event.clientX);
+      };
+
+      const up = () => {
+        if (!dragging) return;
+
+        dragging = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+
+        window.localStorage.setItem(
+          "asb-liftdoc-proposal-editor-width",
+          String(percent),
+        );
+      };
+
+      const keydown = (
+        event: KeyboardEvent,
+      ) => {
+        if (
+          event.key !== "ArrowLeft" &&
+          event.key !== "ArrowRight"
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        apply(
+          percent +
+            (event.key === "ArrowLeft"
+              ? -2
+              : 2),
+        );
+
+        window.localStorage.setItem(
+          "asb-liftdoc-proposal-editor-width",
+          String(percent),
+        );
+      };
+
+      handle.addEventListener(
+        "pointerdown",
+        down,
+      );
+      window.addEventListener(
+        "pointermove",
+        move,
+      );
+      window.addEventListener(
+        "pointerup",
+        up,
+      );
+      handle.addEventListener(
+        "keydown",
+        keydown,
+      );
+      window.addEventListener(
+        "resize",
+        positionHandle,
+      );
+      window.addEventListener(
+        "scroll",
+        positionHandle,
+        true,
+      );
+
+      cleanup = () => {
+        handle.removeEventListener(
+          "pointerdown",
+          down,
+        );
+        window.removeEventListener(
+          "pointermove",
+          move,
+        );
+        window.removeEventListener(
+          "pointerup",
+          up,
+        );
+        handle.removeEventListener(
+          "keydown",
+          keydown,
+        );
+        window.removeEventListener(
+          "resize",
+          positionHandle,
+        );
+        window.removeEventListener(
+          "scroll",
+          positionHandle,
+          true,
+        );
+        handle.remove();
+
+        if (originalParent === null) {
+          splitParent!.removeAttribute("style");
+        } else {
+          splitParent!.setAttribute(
+            "style",
+            originalParent,
+          );
+        }
+
+        if (originalEditor === null) {
+          editorPane!.removeAttribute("style");
+        } else {
+          editorPane!.setAttribute(
+            "style",
+            originalEditor,
+          );
+        }
+
+        if (originalPreview === null) {
+          previewPane!.removeAttribute("style");
+        } else {
+          previewPane!.setAttribute(
+            "style",
+            originalPreview,
+          );
+        }
+      };
+
+      return true;
+    };
+
+    const observer =
+      new MutationObserver(() => {
+        setup();
+      });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    setup();
+
+    return () => {
+      destroyed = true;
+      observer.disconnect();
+      cleanup?.();
+    };
+  }, []);
+
+  /* ASB_RESIZABLE_LIVE_PREVIEW_END */
 
   const [tab, setTab] = useState<Tab>(() => {
     if (typeof window === "undefined") {
@@ -1519,12 +1931,250 @@ export function QuotationProposalEditor() {
     });
   };
 
+  /* ASB_EDITABLE_PRICE_HELPERS_START */
+
+  const recalculateQuotation = (
+    source: Quotation,
+    nextItems: Quotation["items"],
+  ): Quotation => {
+    const items = nextItems.map((item) => {
+      const quantity = Math.max(
+        0,
+        Number(item.quantity) || 0,
+      );
+      const rate = Math.max(
+        0,
+        Number(item.rate) || 0,
+      );
+      const total =
+        Math.round(
+          quantity * rate * 100,
+        ) / 100;
+
+      return {
+        ...item,
+        quantity,
+        rate,
+        total,
+      };
+    });
+
+    const subtotal =
+      Math.round(
+        items.reduce(
+          (sum, item) =>
+            sum + item.total,
+          0,
+        ) * 100,
+      ) / 100;
+
+    const discount = Math.max(
+      0,
+      Number(source.discount) || 0,
+    );
+
+    const taxable = Math.max(
+      0,
+      subtotal - discount,
+    );
+
+    const vatPercent = Math.max(
+      0,
+      Number(source.vatPercent) || 0,
+    );
+
+    const taxPercent = Math.max(
+      0,
+      Number(source.taxPercent) || 0,
+    );
+
+    const vatAmount =
+      Math.round(
+        taxable * vatPercent,
+      ) / 100;
+
+    const taxAmount =
+      Math.round(
+        taxable * taxPercent,
+      ) / 100;
+
+    const otherCharge = Math.max(
+      0,
+      Number(source.otherCharge) || 0,
+    );
+
+    const grandTotal =
+      Math.round(
+        (
+          taxable +
+          vatAmount +
+          taxAmount +
+          otherCharge
+        ) * 100,
+      ) / 100;
+
+    return {
+      ...source,
+      items,
+      subtotal,
+      vatAmount,
+      taxAmount,
+      otherCharge,
+      grandTotal,
+      updatedAt:
+        new Date().toISOString(),
+    };
+  };
+
+  const updateQuotationDraft = (
+    update: (
+      current: Quotation,
+    ) => Quotation,
+  ) => {
+    setPayload((current) => {
+      if (!current) return current;
+
+      return {
+        ...current,
+        quotations:
+          current.quotations.map(
+            (record) =>
+              record.id === quotationId
+                ? update(record)
+                : record,
+          ),
+      };
+    });
+  };
+
+  const updatePriceItem = (
+    itemId: string,
+    patch: Partial<
+      Quotation["items"][number]
+    >,
+  ) => {
+    updateQuotationDraft(
+      (current) =>
+        recalculateQuotation(
+          current,
+          current.items.map(
+            (item) =>
+              item.id === itemId
+                ? {
+                    ...item,
+                    ...patch,
+                  }
+                : item,
+          ),
+        ),
+    );
+  };
+
+  const addPriceItem = () => {
+    updateQuotationDraft(
+      (current) => {
+        const uniquePart =
+          typeof crypto !==
+            "undefined" &&
+          "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()
+                .toString(16)
+                .slice(2)}`;
+
+        return recalculateQuotation(
+          current,
+          [
+            ...current.items,
+            {
+              id: `qi-${uniquePart}`,
+              description: "",
+              quantity: 1,
+              unit: "Pcs",
+              rate: 0,
+              total: 0,
+            },
+          ],
+        );
+      },
+    );
+  };
+
+  const removePriceItem = (
+    itemId: string,
+  ) => {
+    updateQuotationDraft(
+      (current) =>
+        recalculateQuotation(
+          current,
+          current.items.filter(
+            (item) =>
+              item.id !== itemId,
+          ),
+        ),
+    );
+  };
+
+  /* ASB_EDITABLE_PRICE_HELPERS_END */
   const save = async () => {
     if (!quotationId) return;
 
     setSaving(true);
 
     try {
+      if (!quotation) {
+        throw new Error(
+          "Quotation data is not available.",
+        );
+      }
+
+      /* ASB_SAVE_QUOTATION_PRICE_START */
+
+      const quotationSaveResponse =
+        await fetch(
+          "/api/quotations",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify(
+              quotation,
+            ),
+          },
+        );
+
+      const quotationSaveResult =
+        await quotationSaveResponse.json();
+
+      if (!quotationSaveResponse.ok) {
+        throw new Error(
+          quotationSaveResult.error ||
+            "Unable to save quotation price data.",
+        );
+      }
+
+      setPayload((current) => {
+        if (!current) return current;
+
+        return {
+          ...current,
+          quotations:
+            current.quotations.map(
+              (record) =>
+                record.id ===
+                quotationSaveResult
+                  .quotation.id
+                  ? quotationSaveResult
+                      .quotation
+                  : record,
+            ),
+        };
+      });
+
+      /* ASB_SAVE_QUOTATION_PRICE_END */
+
       const response = await fetch(
         "/api/quotation-proposals",
         {
@@ -2486,8 +3136,11 @@ export function QuotationProposalEditor() {
                               ...current,
                               letter: {
                                 ...current.letter,
-                                signatureImageData:
-                                  "",
+                                signatureImageData: "",
+      signatureBoxXMm: 25,
+      signatureBoxYMm: 250,
+      signatureBoxWidthMm: 65,
+      signatureImageWidthMm: 32,
                               },
                             }),
                           )
@@ -2537,6 +3190,41 @@ export function QuotationProposalEditor() {
                   />
                 </div>
 
+<div style={{ gridColumn: "1 / -1", border: "1px solid #d7e0e7", borderRadius: 8, padding: 10, display: "grid", gap: 8 }}>
+  <strong>Signature Box Position</strong>
+  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+    <label><span>Left X (mm)</span><input type="number" min="0" max="159.2" step="1" value={proposal.letter.signatureBoxXMm ?? 25} onChange={(event) => setProposal((current) => ({ ...current, letter: { ...current.letter, signatureBoxXMm: Math.max(0, Math.min(159.2, Number(event.target.value) || 0)) } }))}                         onFocus={(event) =>
+                          event.currentTarget.select()
+                        }
+                        onClick={(event) =>
+                          event.currentTarget.select()
+                        }/></label>
+    <label><span>Top Y (mm)</span><input type="number" min="0" max="260" step="1" value={proposal.letter.signatureBoxYMm ?? 250} onChange={(event) => setProposal((current) => ({ ...current, letter: { ...current.letter, signatureBoxYMm: Math.max(0, Math.min(260, Number(event.target.value) || 0)) } }))}                         onFocus={(event) =>
+                          event.currentTarget.select()
+                        }
+                        onClick={(event) =>
+                          event.currentTarget.select()
+                        }/></label>
+    <label><span>Box Width (mm)</span><input type="number" min="30" max="120" step="1" value={proposal.letter.signatureBoxWidthMm ?? 65} onChange={(event) => setProposal((current) => ({ ...current, letter: { ...current.letter, signatureBoxWidthMm: Math.max(30, Math.min(120, Number(event.target.value) || 65)) } }))}                         onFocus={(event) =>
+                          event.currentTarget.select()
+                        }
+                        onClick={(event) =>
+                          event.currentTarget.select()
+                        }/></label>
+    <label><span>Signature Width (mm)</span><input type="number" min="10" max="80" step="1" value={proposal.letter.signatureImageWidthMm ?? 32} onChange={(event) => setProposal((current) => ({ ...current, letter: { ...current.letter, signatureImageWidthMm: Math.max(10, Math.min(80, Number(event.target.value) || 32)) } }))}                         onFocus={(event) =>
+                          event.currentTarget.select()
+                        }
+                        onClick={(event) =>
+                          event.currentTarget.select()
+                        }/></label>
+  </div>
+  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+    <button type="button" onClick={() => setProposal((c) => ({ ...c, letter: { ...c.letter, signatureBoxYMm: Math.max(0,(c.letter.signatureBoxYMm ?? 250)-2) } }))}>Up 2mm</button>
+    <button type="button" onClick={() => setProposal((c) => ({ ...c, letter: { ...c.letter, signatureBoxYMm: Math.min(260,(c.letter.signatureBoxYMm ?? 250)+2) } }))}>Down 2mm</button>
+    <button type="button" onClick={() => setProposal((c) => ({ ...c, letter: { ...c.letter, signatureBoxXMm: Math.max(0,(c.letter.signatureBoxXMm ?? 25)-2) } }))}>Left 2mm</button>
+    <button type="button" onClick={() => setProposal((c) => ({ ...c, letter: { ...c.letter, signatureBoxXMm: Math.min(159.2,(c.letter.signatureBoxXMm ?? 25)+2) } }))}>Right 2mm</button>
+  </div>
+</div>
 <label>
                     <span>Signer Name</span>
                     <input
@@ -2609,6 +3297,7 @@ export function QuotationProposalEditor() {
               </>
             )}
 
+            {/* ASB_EDITABLE_PRICE_UI_START */}
             {tab === "price" && (
               <>
                 <h2>
@@ -2616,10 +3305,10 @@ export function QuotationProposalEditor() {
                 </h2>
 
                 <div className="asb-info">
-                  Commercial item, quantity,
-                  rate and total come from the
-                  quotation. Price pages grow
-                  automatically.
+                  Edit commercial items here.
+                  Changes appear in Full Proposal
+                  Preview immediately. Click Save
+                  to store the quotation changes.
                 </div>
 
                 <label>
@@ -2638,9 +3327,15 @@ export function QuotationProposalEditor() {
                         (current) => ({
                           ...current,
                           priceRowsPerPage:
-                            Number(
-                              event.target
-                                .value,
+                            Math.max(
+                              5,
+                              Math.min(
+                                25,
+                                Number(
+                                  event.target
+                                    .value,
+                                ) || 5,
+                              ),
                             ),
                         }),
                       )
@@ -2648,33 +3343,218 @@ export function QuotationProposalEditor() {
                   />
                 </label>
 
-                <div className="asb-items">
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 10,
+                  }}
+                >
                   {quotation.items.map(
                     (item, index) => (
                       <div
-                        className="asb-item"
                         key={item.id}
+                        style={{
+                          display: "grid",
+                          gap: 8,
+                          padding: 10,
+                          border:
+                            "1px solid #d7e0e7",
+                          borderRadius: 10,
+                          background:
+                            "#ffffff",
+                        }}
                       >
-                        <span>
-                          {index + 1}.{" "}
-                          {item.description}
-                        </span>
-                        <strong>
-                          {item.quantity}{" "}
-                          {item.unit}
-                        </strong>
+                        <label>
+                          <span>
+                            {index + 1}. Description
+                          </span>
+                          <input
+                            value={
+                              item.description
+                            }
+                            onChange={(
+                              event,
+                            ) =>
+                              updatePriceItem(
+                                item.id,
+                                {
+                                  description:
+                                    event
+                                      .target
+                                      .value,
+                                },
+                              )
+                            }
+                          />
+                        </label>
+
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fit, minmax(105px, 1fr))",
+                            gap: 8,
+                            alignItems: "end",
+                          }}
+                        >
+                          <label>
+                            <span>Qty</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="1"
+                              value={
+                                item.quantity
+                              }
+                              onChange={(
+                                event,
+                              ) =>
+                                updatePriceItem(
+                                  item.id,
+                                  {
+                                    quantity:
+                                      Number(
+                                        event
+                                          .target
+                                          .value,
+                                      ) || 0,
+                                  },
+                                )
+                              }
+                            />
+                          </label>
+
+                          <label>
+                            <span>Unit</span>
+                            <input
+                              value={
+                                item.unit
+                              }
+                              onChange={(
+                                event,
+                              ) =>
+                                updatePriceItem(
+                                  item.id,
+                                  {
+                                    unit:
+                                      event
+                                        .target
+                                        .value,
+                                  },
+                                )
+                              }
+                            />
+                          </label>
+
+                          <label>
+                            <span>Rate</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={
+                                item.rate
+                              }
+                              onChange={(
+                                event,
+                              ) =>
+                                updatePriceItem(
+                                  item.id,
+                                  {
+                                    rate:
+                                      Number(
+                                        event
+                                          .target
+                                          .value,
+                                      ) || 0,
+                                  },
+                                )
+                              }
+                            />
+                          </label>
+
+                          <label>
+                            <span>Total</span>
+                            <input
+                              value={
+                                item.total.toLocaleString(
+                                  "en-BD",
+                                  {
+                                    maximumFractionDigits:
+                                      2,
+                                  },
+                                )
+                              }
+                              readOnly
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            className="asb-btn"
+                            onClick={() =>
+                              removePriceItem(
+                                item.id,
+                              )
+                            }
+                            style={{
+                              minHeight: 38,
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     ),
                   )}
                 </div>
 
-                <div className="asb-info">
-                  To edit the commercial item
-                  list itself, use the normal
-                  quotation commercial data.
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    flexWrap: "wrap",
+                    marginTop: 10,
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="asb-btn"
+                    onClick={addPriceItem}
+                  >
+                    + Add Item
+                  </button>
+
+                  <div
+                    className="asb-info"
+                    style={{
+                      flex: "1 1 320px",
+                      margin: 0,
+                    }}
+                  >
+                    Subtotal: BDT{" "}
+                    {quotation.subtotal.toLocaleString(
+                      "en-BD",
+                      {
+                        maximumFractionDigits:
+                          2,
+                      },
+                    )}
+                    {" | "}
+                    Grand Total: BDT{" "}
+                    {quotation.grandTotal.toLocaleString(
+                      "en-BD",
+                      {
+                        maximumFractionDigits:
+                          2,
+                      },
+                    )}
+                  </div>
                 </div>
               </>
             )}
+            {/* ASB_EDITABLE_PRICE_UI_END */}
 
             {tab === "terms" && (
               <>
@@ -3007,7 +3887,7 @@ export function QuotationProposalEditor() {
             </div>
           </div>
 
-          <iframe
+          <iframe data-asb-live-proposal-frame="true"
             key={previewVersion}
             className="asb-preview-frame"
             title="Quotation proposal preview"
