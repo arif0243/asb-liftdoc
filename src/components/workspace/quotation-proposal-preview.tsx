@@ -681,6 +681,30 @@ max-height: 297mm !important;
 }
 
 /* ASB_FINAL_A4_TITLE_FIX_END */
+
+/* ASB_PROPOSAL_TITLE_SAFE_WIDTH_START */
+
+/*
+  A4 width: 210mm
+  Left safe margin: 25.4mm
+  Right safe margin: 25.4mm
+  Remaining title width: 159.2mm
+*/
+.asb-q-cover h1 {
+  width: 159.2mm !important;
+  max-width: 159.2mm !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  justify-self: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* ASB_PROPOSAL_TITLE_SAFE_WIDTH_END */
 `;
 
 function money(value: number) {
