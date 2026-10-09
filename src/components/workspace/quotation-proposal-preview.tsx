@@ -817,6 +817,65 @@ max-height: 297mm !important;
 }
 
 /* ASB_LETTER_CSS_ONLY_FINAL_END */
+
+/* ASB_LETTER_SIGNATURE_VISIBLE_FINAL_START */
+
+.asb-q-letter-signature-image {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  width: 32mm !important;
+  max-width: 32mm !important;
+  height: auto !important;
+  max-height: 15mm !important;
+
+  object-fit: contain !important;
+  object-position: left bottom !important;
+
+  margin: 0 0 0.8mm 0 !important;
+  padding: 0 !important;
+}
+
+.asb-q-signature,
+.asb-q-letter-signature,
+.asb-q-signature.asb-q-letter-signature {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+
+  gap: 0 !important;
+  row-gap: 0 !important;
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.asb-q-signature > *,
+.asb-q-letter-signature > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.asb-q-signature strong,
+.asb-q-letter-signature strong {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.1 !important;
+}
+
+.asb-q-signature strong + *,
+.asb-q-letter-signature strong + * {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ASB_LETTER_SIGNATURE_VISIBLE_FINAL_END */
 `;
 
 function money(value: number) {
