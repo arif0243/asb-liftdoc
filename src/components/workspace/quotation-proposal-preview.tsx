@@ -542,8 +542,11 @@ body {
 @media print {
   .asb-q-print-no-chrome .asb-q-header,
   .asb-q-print-no-chrome .asb-q-footer {
-    display: none !important;
-  }
+    display: block !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 
   .asb-q-print-no-chrome .asb-q-page {
     padding-top: 10mm;
@@ -569,8 +572,11 @@ body {
 
   body.asb-print-no-chrome .asb-q-header,
   body.asb-print-no-chrome .asb-q-footer {
-    display: none !important;
-  }
+    display: block !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 
   .asb-q-stage {
     display: block;
@@ -942,8 +948,11 @@ ${inheritedStyles}
 
   body.asb-print-no-chrome .asb-q-header,
   body.asb-print-no-chrome .asb-q-footer {
-    display: none !important;
-  }
+    display: block !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 
   .asb-q-stage,
   .asb-q-pages {
@@ -1278,11 +1287,28 @@ export function QuotationProposalPreview() {
   */
   .asb-q-print-no-chrome .asb-q-header,
   .asb-q-print-no-chrome .asb-q-footer {
-    display: none !important;
-  }
+    display: block !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 }
 
 /* ASB_A4_PRINT_NO_CHROME_FIX_END */
+
+/* ASB_PRESERVE_PRINT_CHROME_SPACE_START */
+
+@media print {
+  .asb-q-print-no-chrome .asb-q-header,
+  .asb-q-print-no-chrome .asb-q-footer {
+    display: block !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ASB_PRESERVE_PRINT_CHROME_SPACE_END */
 `;
 
                 if (
