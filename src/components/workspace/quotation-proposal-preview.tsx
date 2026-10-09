@@ -705,6 +705,34 @@ max-height: 297mm !important;
 }
 
 /* ASB_PROPOSAL_TITLE_SAFE_WIDTH_END */
+
+/* ASB_LETTER_SIGNER_COMPACT_FINAL_START */
+
+/* Remove vertical gap between signer name, designation and company. */
+.asb-q-signature {
+  row-gap: 0 !important;
+  gap: 0 !important;
+}
+
+.asb-q-signature > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: 1.15 !important;
+}
+
+/* Signature image sits directly above the signer name. */
+.asb-q-letter-signature-image {
+  display: block !important;
+  width: 32mm !important;
+  max-width: 32mm !important;
+  height: auto !important;
+  max-height: 14mm !important;
+  object-fit: contain !important;
+  object-position: left bottom !important;
+  margin: 0 0 1mm 0 !important;
+}
+
+/* ASB_LETTER_SIGNER_COMPACT_FINAL_END */
 `;
 
 function money(value: number) {
@@ -1358,7 +1386,7 @@ export function QuotationProposalPreview() {
               className="asb-q-btn"
               onClick={() => {
                 const editUrl =
-                  `/quotations/proposal?id=${encodeURIComponent(quotationId)}`;
+                  `/quotations/proposal?id=${encodeURIComponent(quotationId)}&tab=${new URLSearchParams(window.location.search).get("tab") === "letter" ? "letter" : "cover"}`;
 
                 if (
                   window.opener &&

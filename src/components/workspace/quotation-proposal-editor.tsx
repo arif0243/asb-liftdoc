@@ -612,6 +612,7 @@ function fallback(
       technicalHeading:
         "Technical Satisfactory Details",
       technicalDetails: "",
+      signatureImageData: "",
       signerName: "",
       signerDesignation: "",
       signerCompany: "ASB Lift",
@@ -1150,8 +1151,17 @@ export function QuotationProposalEditor() {
       fallback(quotationId),
     );
 
-  const [tab, setTab] =
-    useState<Tab>("cover");
+  const [tab, setTab] = useState<Tab>(() => {
+    if (typeof window === "undefined") {
+      return "cover";
+    }
+
+    return new URLSearchParams(
+      window.location.search,
+    ).get("tab") === "letter"
+      ? "letter"
+      : "cover";
+  });
 
   const [saving, setSaving] =
     useState(false);
@@ -1641,9 +1651,7 @@ export function QuotationProposalEditor() {
             className="asb-btn"
             onClick={() =>
               window.open(
-                `/quotations/proposal/preview?id=${encodeURIComponent(
-                  quotation.id,
-                )}`,
+                `/quotations/proposal/preview?id=${encodeURIComponent(quotationId)}&tab=${tab === "letter" ? "letter" : "cover"}`,
                 "asbQuotationPreview",
                 "popup=yes,width=1280,height=900,resizable=yes,scrollbars=yes",
               )
@@ -2432,7 +2440,104 @@ export function QuotationProposalEditor() {
                 </label>
 
                 <div className="asb-grid-3">
-                  <label>
+                  <div
+                  style={{
+                    gridColumn: "1 / -1",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flexWrap: "wrap",
+                    marginBottom: 2,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      document
+                        .getElementById(
+                          "asb-letter-signature-file",
+                        )
+                        ?.click()
+                    }
+                  >
+                    Add Signature Image
+                  </button>
+
+                  {proposal.letter.signatureImageData ? (
+                    <>
+                      <img
+                        src={
+                          proposal.letter
+                            .signatureImageData
+                        }
+                        alt="Letter signature"
+                        style={{
+                          width: 90,
+                          height: 42,
+                          objectFit: "contain",
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setProposal(
+                            (current) => ({
+                              ...current,
+                              letter: {
+                                ...current.letter,
+                                signatureImageData:
+                                  "",
+                              },
+                            }),
+                          )
+                        }
+                      >
+                        Remove Signature
+                      </button>
+                    </>
+                  ) : null}
+
+                  <input
+                    id="asb-letter-signature-file"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    style={{ display: "none" }}
+                    onChange={(event) => {
+                      const file =
+                        event.target.files?.[0];
+
+                      if (!file) return;
+
+                      const reader =
+                        new FileReader();
+
+                      reader.onload = () => {
+                        const value =
+                          typeof reader.result ===
+                          "string"
+                            ? reader.result
+                            : "";
+
+                        setProposal(
+                          (current) => ({
+                            ...current,
+                            letter: {
+                              ...current.letter,
+                              signatureImageData:
+                                value,
+                            },
+                          }),
+                        );
+                      };
+
+                      reader.readAsDataURL(file);
+                      event.target.value = "";
+                    }}
+                  />
+                </div>
+
+<label>
                     <span>Signer Name</span>
                     <input
                       value={

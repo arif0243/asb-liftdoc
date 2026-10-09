@@ -628,7 +628,14 @@ export function QuotationProposalRenderer({
 
                   <div className={styles.signature}>
                     <strong>
-                      {proposal.letter.signerName}
+                      {proposal.letter.signatureImageData ? (
+        <img
+          className="asb-q-letter-signature-image"
+          src={proposal.letter.signatureImageData}
+          alt=""
+        />
+      ) : null}
+      {proposal.letter.signerName}
                     </strong>
                     <span>
                       {
