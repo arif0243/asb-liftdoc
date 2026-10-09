@@ -618,6 +618,69 @@ max-height: 297mm !important;
     page-break-after: auto;
   }
 }
+
+/* ASB_FINAL_A4_TITLE_FIX_START */
+
+/*
+  Exact physical A4 page.
+  The left/right 1-inch safe zone is INSIDE the 210mm page.
+*/
+.asb-q-page {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+
+  height: 297mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+
+  flex: 0 0 auto !important;
+  aspect-ratio: 210 / 297 !important;
+  box-sizing: border-box !important;
+
+  padding-left: 25.4mm !important;
+  padding-right: 25.4mm !important;
+}
+
+/*
+  Proposal Title gets the complete safe content width:
+  210mm - 25.4mm - 25.4mm = 159.2mm.
+  Font size/weight are intentionally NOT changed.
+*/
+.asb-q-cover h1 {
+  width: 159.2mm !important;
+  max-width: 159.2mm !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+@page {
+  size: 210mm 297mm;
+  margin: 0;
+}
+
+@media print {
+  .asb-q-page {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+
+    flex: 0 0 auto !important;
+    aspect-ratio: 210 / 297 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ASB_FINAL_A4_TITLE_FIX_END */
 `;
 
 function money(value: number) {
@@ -1271,83 +1334,7 @@ export function QuotationProposalPreview() {
               className="asb-q-btn"
               onClick={() => {
                 const editUrl =
-                  `/quotations/proposal?id=${encodeURIComponent(
-                    quotation.id,
-                  )}
-/* ASB_A4_PRINT_NO_CHROME_FIX_START */
-
-/* Exact physical A4 portrait size */
-.asb-q-page {
-  width: 210mm !important;
-  min-width: 210mm !important;
-  max-width: 210mm !important;
-
-  height: 297mm !important;
-  min-height: 297mm !important;
-  max-height: 297mm !important;
-
-  aspect-ratio: 210 / 297 !important;
-  box-sizing: border-box !important;
-min-width: 210mm !important;
-height: 297mm !important;
-max-height: 297mm !important;
-
-}
-
-@page {
-  size: 210mm 297mm;
-  margin: 0;
-margin: 0;
-}
-
-@media print {
-  .asb-q-page {
-    width: 210mm !important;
-    min-width: 210mm !important;
-    max-width: 210mm !important;
-
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
-
-    aspect-ratio: 210 / 297 !important;
-    box-sizing: border-box !important;
-min-width: 210mm !important;
-height: 297mm !important;
-max-height: 297mm !important;
-
-  }
-
-  /*
-    Normal browser-print path:
-    if "Print without Header and Footer" is checked,
-    hide both chrome blocks.
-  */
-  .asb-q-print-no-chrome .asb-q-header,
-  .asb-q-print-no-chrome .asb-q-footer {
-    display: block !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-}
-
-/* ASB_A4_PRINT_NO_CHROME_FIX_END */
-
-/* ASB_PRESERVE_PRINT_CHROME_SPACE_START */
-
-@media print {
-  .asb-q-print-no-chrome .asb-q-header,
-  .asb-q-print-no-chrome .asb-q-footer {
-    display: block !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-}
-
-/* ASB_PRESERVE_PRINT_CHROME_SPACE_END */
-`;
+                  `/quotations/proposal?id=${encodeURIComponent(quotationId)}`;
 
                 if (
                   window.opener &&

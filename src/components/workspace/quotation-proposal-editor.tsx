@@ -1122,6 +1122,21 @@ function ChromeEditor({
   );
 }
 
+function sanitizeQuotationId(
+  value: string | null,
+) {
+  if (!value) return "";
+
+  const uuid = value.match(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i,
+  )?.[0];
+
+  if (uuid) return uuid;
+
+  return decodeURIComponent(value)
+    .split(/[\/\s]/)[0]
+    .trim();
+}
 export function QuotationProposalEditor() {
   const searchParams = useSearchParams();
   const quotationId =
