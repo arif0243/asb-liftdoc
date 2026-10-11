@@ -83,32 +83,17 @@ jobs:
             cp -a public "$OUT/public"
           fi
 
-          cat > "$OUT/CPANEL-DEPLOYMENT.txt" <<'TXT'
-ASB LiftDoc cPanel Runtime Package
-
-Node.js:
-- Use Node.js 22.
-
-Application root:
-- The folder where this ZIP is extracted.
-
-Startup file:
-- server.js
-
-Required environment variable:
-- ASB_AUTH_SECRET = a private random secret of at least 32 characters.
-
-Persistent runtime data:
-- data/ must remain writable and must be preserved between deployments.
-- This application currently uses JSON files in data/ instead of DATABASE_URL.
-
-Do not:
-- run next build on cPanel
-- upload .env.local inside a public repository
-- overwrite the live data/ folder during updates
-
-The generated server.js reads PORT/HOSTNAME from the hosting environment.
-TXT
+          printf '%s\n' \
+            'ASB LiftDoc cPanel Runtime Package' \
+            '' \
+            'Node.js: 22' \
+            'Startup file: server.js' \
+            'Required env: ASB_AUTH_SECRET (32+ characters)' \
+            'Persistent storage: data/' \
+            'DATABASE_URL is not used by the current application.' \
+            'Do not run next build on cPanel.' \
+            'Do not overwrite data/ during updates.' \
+            > "$OUT/CPANEL-DEPLOYMENT.txt"
 
           printf '%s\n' "$GITHUB_SHA" > "$OUT/RELEASE-COMMIT.txt"
 
