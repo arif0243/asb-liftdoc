@@ -261,3 +261,59 @@
     page-break-after: auto;
   }
 }
+
+/* ASB_PRICE_TOTAL_FULL_CELL_BORDER_START */
+
+/*
+  Final Price row alignment:
+  Amount in Words | Total | Amount
+
+  Total gets a full-height cell border aligned to
+  the Rate and Total table columns.
+*/
+.amountRow {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr)
+    29mm
+    29mm !important;
+  gap: 0 !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+}
+
+.amountRow > span {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  padding: 2.5mm !important;
+}
+
+.amountRow > div {
+  display: contents !important;
+}
+
+.amountRow > div > strong:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+  padding: 2.5mm 2mm !important;
+  border-left: 0.25mm solid #222 !important;
+  border-right: 0.25mm solid #222 !important;
+  font-weight: 700 !important;
+}
+
+.amountRow > div > strong:last-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+  padding: 2.5mm 2mm !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+
+/* ASB_PRICE_TOTAL_FULL_CELL_BORDER_END */

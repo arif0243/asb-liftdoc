@@ -983,6 +983,63 @@ max-height: 297mm !important;
 }
 
 /* ASB_SIGNATURE_EXACT_GAP_FIX_END */
+
+/* ASB_PRICE_TOTAL_FULL_CELL_BORDER_START */
+
+/*
+  Final Price row alignment:
+  Amount in Words | Total | Amount
+
+  The Total label is a full-height table-style cell.
+  Top/bottom borders come from the outer total row.
+  Left/right borders form the complete rectangular Total box.
+*/
+.asb-q-total-row {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr)
+    27mm
+    27mm !important;
+  gap: 0 !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+}
+
+.asb-q-total-row > span {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  padding: 2.5mm !important;
+}
+
+.asb-q-total-value {
+  display: contents !important;
+}
+
+.asb-q-total-value > strong:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+  padding: 2.5mm 2mm !important;
+  border-left: 0.25mm solid #222 !important;
+  border-right: 0.25mm solid #222 !important;
+  font-weight: 700 !important;
+}
+
+.asb-q-total-value > strong:last-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  box-sizing: border-box !important;
+  align-self: stretch !important;
+  padding: 2.5mm 2mm !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+
+/* ASB_PRICE_TOTAL_FULL_CELL_BORDER_END */
 `;
 
 function money(value: number) {
@@ -2038,73 +2095,82 @@ export function QuotationProposalPreview() {const searchParams = useSearchParams
                         </tr>
                       </thead>
 
-                      <tbody>
-                        {priceItems.length >
-                        0 ? (
-                          priceItems.map(
-                            (
-                              item,
-                              localIndex,
-                            ) => (
-                              <tr key={item.id}>
-                                <td>
-                                  {(page.start ??
-                                    0) +
-                                    localIndex +
-                                    1}
-                                </td>
-                                <td>
-                                  {
-                                    item.description
-                                  }
-                                </td>
-                                <td>
-                                  {item.quantity}{" "}
-                                  {item.unit}
-                                </td>
-                                <td>
-                                  {money(
-                                    item.rate,
-                                  )}
-                                </td>
-                                <td>
-                                  {money(
-                                    item.total,
-                                  )}
-                                </td>
-                              </tr>
-                            ),
-                          )
-                        ) : (
-                          <tr>
-                            <td>1</td>
-                            <td colSpan={4}>
-                              No commercial item
-                              added.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
+                      
+<tbody>
+  {priceItems.map(
+    (item, index) => (
+      <tr key={item.id}>
+        <td>
+          {(page.start ?? 0) +
+            index +
+            1}
+        </td>
+        <td>{item.description}</td>
+        <td>
+          {item.quantity} {item.unit}
+        </td>
+
+        {proposal.priceMergeRateTotalRows ? (
+          index === 0 ? (
+            <>
+              <td
+                rowSpan={Math.max(
+                  1,
+                  priceItems.length,
+                )}
+                style={{
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  paddingTop: 0,
+                  fontWeight: 700,
+                }}
+              >
+                {(priceItems.length > 0 && priceItems[priceItems.length - 1]?.id === quotation.items[quotation.items.length - 1]?.id) ? (proposal.priceMergedRateText || "Package work") : null}
+              </td>
+
+              <td
+                rowSpan={Math.max(
+                  1,
+                  priceItems.length,
+                )}
+                style={{
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  paddingTop: 0,
+                  fontWeight: 700,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {(priceItems.length > 0 && priceItems[priceItems.length - 1]?.id === quotation.items[quotation.items.length - 1]?.id) ? moneyFixed2(proposalDisplayTotal(proposal, quotation)) : null}
+              </td>
+            </>
+          ) : null
+        ) : (
+          <>
+            <td>{money(item.rate)}</td>
+            <td>{money(item.total)}</td>
+          </>
+        )}
+      </tr>
+    ),
+  )}
+</tbody>
                     </table>
 
                     {isLastPrice ? (
                       <>
                         <div className="asb-q-total-row">
                           <span>
-                            {amountInWords(
-                              quotation.grandTotal,
-                            )}
+                            {amountInWords(proposalDisplayTotal(proposal, quotation))}
                           </span>
 
                           <div className="asb-q-total-value">
-                            <span>Total</span>
+                            <strong style={{ display: "block", border: "1px solid #111827", padding: "4px 8px", textAlign: "center", fontWeight: 700 }}>Total</strong>
                             <strong>
                               {
                                 quotation.currency
                               }{" "}
-                              {money(
-                                quotation.grandTotal,
-                              )}
+                              {moneyFixed2(proposalDisplayTotal(proposal, quotation))}
                             </strong>
                           </div>
                         </div>
@@ -2261,4 +2327,30 @@ export function QuotationProposalPreview() {const searchParams = useSearchParams
       </main>
     </div>
   );
+}
+
+function proposalDisplayTotal(
+  proposal: QuotationProposal,
+  quotation: Quotation,
+) {
+  const mergedAmount = Number(
+    proposal.priceMergedTotalAmount,
+  );
+
+  if (
+    proposal.priceMergeRateTotalRows &&
+    Number.isFinite(mergedAmount) &&
+    mergedAmount >= 0
+  ) {
+    return mergedAmount;
+  }
+
+  return quotation.grandTotal;
+}
+
+function moneyFixed2(value: number) {
+  return new Intl.NumberFormat("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value) || 0);
 }

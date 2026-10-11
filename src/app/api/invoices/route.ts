@@ -1,4 +1,5 @@
-﻿import { NextResponse } from "next/server";
+import { requireApiPermission } from "@/lib/auth/authz";
+import { NextResponse } from "next/server";
 import {
   createInvoice,
   duplicateInvoice,
@@ -9,6 +10,9 @@ import { readQuotationStore } from "@/lib/quotation-store";
 import { readWorkspace } from "@/lib/workspace-store";
 
 export async function GET() {
+  // ASB_AUTH_GUARD_GET
+  const authDenied = await requireApiPermission("invoices.view");
+  if (authDenied) return authDenied;
   const [invoiceStore, quotationStore, workspace] =
     await Promise.all([
       readInvoiceStore(),
@@ -25,6 +29,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // ASB_AUTH_GUARD_POST
+  const authDenied = await requireApiPermission("invoices.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
 
@@ -48,6 +55,9 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  // ASB_AUTH_GUARD_PUT
+  const authDenied = await requireApiPermission("invoices.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
 

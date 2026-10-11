@@ -50,6 +50,11 @@ export type QuotationProposalLetter = {
   body: string;
   technicalHeading: string;
   technicalDetails: string;
+  signatureImageData?: string;
+  signatureBoxXMm?: number;
+  signatureBoxYMm?: number;
+  signatureBoxWidthMm?: number;
+  signatureImageWidthMm?: number;
   signerName: string;
   signerDesignation: string;
   signerCompany: string;
@@ -81,6 +86,9 @@ export type QuotationProposal = {
   boldAllText?: boolean;
   printWithoutHeaderFooter?: boolean;
   priceRowsPerPage: number;
+  priceMergeRateTotalRows?: boolean;
+  priceMergedRateText?: string;
+  priceMergedTotalAmount?: number;
 
   updatedAt: string;
 };

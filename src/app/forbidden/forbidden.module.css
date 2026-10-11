@@ -1,0 +1,26 @@
+.page {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+
+.card {
+  width: min(100%, 520px);
+  border: 1px solid #dfe4e9;
+  border-radius: 12px;
+  background: #fff;
+  padding: 28px;
+  text-align: center;
+}
+
+.card h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: #252b32;
+}
+
+.card p {
+  margin: 0;
+  color: #6d7680;
+}

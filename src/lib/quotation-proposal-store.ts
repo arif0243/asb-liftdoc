@@ -71,6 +71,11 @@ export function defaultQuotationProposal(
         "We are pleased to submit our financial proposal for the requested elevator works. We remain committed to quality products, professional service and customer satisfaction.",
       technicalHeading: "Technical Satisfactory Details",
       technicalDetails: "",
+      signatureImageData: "",
+      signatureBoxXMm: 25,
+      signatureBoxYMm: 250,
+      signatureBoxWidthMm: 65,
+      signatureImageWidthMm: 32,
       signerName: "",
       signerDesignation: "",
       signerCompany: "ASB Lift",
@@ -99,6 +104,9 @@ export function defaultQuotationProposal(
     boldAllText: false,
     printWithoutHeaderFooter: false,
     priceRowsPerPage: 12,
+    priceMergeRateTotalRows: false,
+    priceMergedRateText: "Package work",
+    priceMergedTotalAmount: undefined,
 
     updatedAt: "",
   };
@@ -467,6 +475,14 @@ export async function saveQuotationProposal(
         input.letter?.technicalDetails,
         "",
       ),
+      signatureImageData: stringValue(
+        input.letter?.signatureImageData,
+        "",
+      ),
+      signatureBoxXMm: Number(input.letter?.signatureBoxXMm) >= 0 && Number(input.letter?.signatureBoxXMm) <= 159.2 ? Number(input.letter?.signatureBoxXMm) : fallback.letter.signatureBoxXMm ?? 25,
+      signatureBoxYMm: Number(input.letter?.signatureBoxYMm) >= 0 && Number(input.letter?.signatureBoxYMm) <= 260 ? Number(input.letter?.signatureBoxYMm) : fallback.letter.signatureBoxYMm ?? 250,
+      signatureBoxWidthMm: Number(input.letter?.signatureBoxWidthMm) >= 30 && Number(input.letter?.signatureBoxWidthMm) <= 120 ? Number(input.letter?.signatureBoxWidthMm) : fallback.letter.signatureBoxWidthMm ?? 65,
+      signatureImageWidthMm: Number(input.letter?.signatureImageWidthMm) >= 10 && Number(input.letter?.signatureImageWidthMm) <= 80 ? Number(input.letter?.signatureImageWidthMm) : fallback.letter.signatureImageWidthMm ?? 32,
       signerName: stringValue(
         input.letter?.signerName,
         "",
@@ -550,6 +566,23 @@ export async function saveQuotationProposal(
       rows <= 25
         ? Math.round(rows)
         : fallback.priceRowsPerPage,
+      priceMergeRateTotalRows:
+        input.priceMergeRateTotalRows === true,
+      priceMergedRateText: stringValue(
+        input.priceMergedRateText,
+        "Package work",
+      ),
+      priceMergedTotalAmount:
+        Number.isFinite(
+          Number(input.priceMergedTotalAmount),
+        )
+          ? Math.max(
+              0,
+              Number(
+                input.priceMergedTotalAmount,
+              ),
+            )
+          : undefined,
 
     updatedAt: new Date().toISOString(),
   };

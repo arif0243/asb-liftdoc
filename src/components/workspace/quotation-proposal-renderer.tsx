@@ -135,6 +135,38 @@ const PROPOSAL_FALLBACK_CSS = `
 .${styles.signature} strong{
   min-height:10mm;
 }
+/* ASB_RENDERER_SIGNATURE_EXACT_GAP_FIX_START */
+
+[data-asb-movable-letter-signature="true"] .${styles.signature}{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:0 !important;
+  row-gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  padding-bottom:0 !important;
+}
+
+[data-asb-movable-letter-signature="true"] .${styles.signature} strong{
+  display:block !important;
+  min-height:0 !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1.1 !important;
+}
+
+[data-asb-movable-letter-signature="true"] .${styles.signature} span{
+  display:block !important;
+  min-height:0 !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1.1 !important;
+}
+
+/* ASB_RENDERER_SIGNATURE_EXACT_GAP_FIX_END */
 .${styles.price} h2,
 .${styles.terms} h2{
   margin:0 0 5mm;
@@ -626,8 +658,27 @@ export function QuotationProposalRenderer({
                     </div>
                   )}
 
+                  <div                     data-asb-movable-letter-signature="true"                     style={{                       position: "absolute",                       left: `${proposal.letter.signatureBoxXMm ?? 25}mm`,                       top: `${proposal.letter.signatureBoxYMm ?? 250}mm`,                       width: `${proposal.letter.signatureBoxWidthMm ?? 65}mm`,                       zIndex: 5,                       margin: 0,                       padding: 0,                     }}                   >
                   <div className={styles.signature}>
-                    <strong>
+                                        {proposal.letter.signatureImageData ? (
+                      <img
+                        className="asb-q-letter-signature-image"
+                        src={proposal.letter.signatureImageData}
+                        alt=""
+                        style={{
+                          display: "block",
+                          width: `${proposal.letter.signatureImageWidthMm ?? 32}mm`,
+                          maxWidth: "100%",
+                          height: "auto",
+                          maxHeight: "18mm",
+                          objectFit: "contain",
+                          objectPosition: "left bottom",
+                          margin: "0 0 1mm 0",
+                          padding: 0,
+                        }}
+                      />
+                    ) : null}
+<strong>
                       {proposal.letter.signatureImageData ? (
         <img
           className="asb-q-letter-signature-image"
@@ -649,6 +700,7 @@ export function QuotationProposalRenderer({
                           .signerCompany
                       }
                     </span>
+                  </div>
                   </div>
                 </section>
               )}
@@ -692,12 +744,52 @@ export function QuotationProposalRenderer({
                               {item.quantity}{" "}
                               {item.unit}
                             </td>
-                            <td>
+                            
+        {proposal.priceMergeRateTotalRows ? (
+          localIndex === 0 ? (
+            <>
+              <td
+                rowSpan={Math.max(
+                  1,
+                  items.length,
+                )}
+                style={{
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  paddingTop: 0,
+                  fontWeight: 700,
+                }}
+              >
+                {(items.length > 0 && items[items.length - 1]?.id === quotation.items[quotation.items.length - 1]?.id) ? (proposal.priceMergedRateText || "Package work") : null}
+              </td>
+
+              <td
+                rowSpan={Math.max(
+                  1,
+                  items.length,
+                )}
+                style={{
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  paddingTop: 0,
+                  fontWeight: 700,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {(items.length > 0 && items[items.length - 1]?.id === quotation.items[quotation.items.length - 1]?.id) ? moneyFixed2(proposalDisplayTotal(proposal, quotation)) : null}
+              </td>
+            </>
+          ) : null
+        ) : (
+          <>
+            <td>
                               {money(item.rate)}
                             </td>
-                            <td>
+            <td>
                               {money(item.total)}
                             </td>
+          </>
+        )}
                           </tr>
                         ),
                       )}
@@ -718,25 +810,44 @@ export function QuotationProposalRenderer({
                       <div className={styles.amountRow}>
                         <span>
                           {amountInWords(
-                            quotation.grandTotal,
+                            proposalDisplayTotal(proposal, quotation),
                           )}
                         </span>
 
                         <div>
-                          <span>Total</span>
+                          <strong style={{ display: "block", border: "1px solid #111827", padding: "4px 8px", textAlign: "center", fontWeight: 700 }}>Total</strong>
                           <strong>
                             {quotation.currency}{" "}
                             {money(
-                              quotation.grandTotal,
+                              proposalDisplayTotal(proposal, quotation),
                             )}
                           </strong>
                         </div>
                       </div>
 
+                      <div                         data-asb-movable-letter-signature="true"                         style={{                           position: "absolute",                           left: `${proposal.letter.signatureBoxXMm ?? 25}mm`,                           top: `${proposal.letter.signatureBoxYMm ?? 250}mm`,                           width: `${proposal.letter.signatureBoxWidthMm ?? 65}mm`,                           zIndex: 5,                           margin: 0,                           padding: 0,                         }}                       >
                       <div
                         className={styles.signature}
                       >
-                        <strong>
+                                                {proposal.letter.signatureImageData ? (
+                          <img
+                            className="asb-q-letter-signature-image"
+                            src={proposal.letter.signatureImageData}
+                            alt=""
+                            style={{
+                              display: "block",
+                              width: `${proposal.letter.signatureImageWidthMm ?? 32}mm`,
+                              maxWidth: "100%",
+                              height: "auto",
+                              maxHeight: "18mm",
+                              objectFit: "contain",
+                              objectPosition: "left bottom",
+                              margin: "0 0 1mm 0",
+                              padding: 0,
+                            }}
+                          />
+                        ) : null}
+<strong>
                           {
                             proposal.letter
                               .signerName
@@ -754,6 +865,7 @@ export function QuotationProposalRenderer({
                               .signerCompany
                           }
                         </span>
+                      </div>
                       </div>
                     </>
                   )}
@@ -853,4 +965,30 @@ export function QuotationProposalRenderer({
       })}
     </div>
   );
+}
+
+function proposalDisplayTotal(
+  proposal: QuotationProposal,
+  quotation: Quotation,
+) {
+  const mergedAmount = Number(
+    proposal.priceMergedTotalAmount,
+  );
+
+  if (
+    proposal.priceMergeRateTotalRows &&
+    Number.isFinite(mergedAmount) &&
+    mergedAmount >= 0
+  ) {
+    return mergedAmount;
+  }
+
+  return quotation.grandTotal;
+}
+
+function moneyFixed2(value: number) {
+  return new Intl.NumberFormat("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value) || 0);
 }

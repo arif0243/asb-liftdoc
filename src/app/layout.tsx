@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import { ShellEnhancements } from "@/components/auth/shell-enhancements";
+import type { Metadata } from "next";
 import "./globals.css";
-import { AppShell } from "@/components/app-shell";
+import { AppShellRouter } from "@/components/auth/app-shell-router";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -19,7 +20,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <AppShellRouter>{children}</AppShellRouter>
+              <ShellEnhancements />
       </body>
     </html>
   );

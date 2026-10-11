@@ -1,10 +1,14 @@
-﻿import { NextResponse } from "next/server";
+import { requireApiPermission } from "@/lib/auth/authz";
+import { NextResponse } from "next/server";
 import {
   createProject,
   readWorkspace,
   updateProject,
 } from "@/lib/workspace-store";
 export async function GET() {
+  // ASB_AUTH_GUARD_GET
+  const authDenied = await requireApiPermission("projects.view");
+  if (authDenied) return authDenied;
   const data = await readWorkspace();
   return NextResponse.json({
     projects: data.projects,
@@ -13,6 +17,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // ASB_AUTH_GUARD_POST
+  const authDenied = await requireApiPermission("projects.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
     const project = await createProject(body);
@@ -26,6 +33,9 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  // ASB_AUTH_GUARD_PUT
+  const authDenied = await requireApiPermission("projects.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
 

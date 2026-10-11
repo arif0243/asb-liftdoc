@@ -1,4 +1,5 @@
-﻿import { NextResponse } from "next/server";
+import { requireApiPermission } from "@/lib/auth/authz";
+import { NextResponse } from "next/server";
 import { readQuotationStore } from "@/lib/quotation-store";
 import { readWorkspace } from "@/lib/workspace-store";
 import {
@@ -11,6 +12,9 @@ import {
 } from "@/lib/template-store";
 
 export async function GET() {
+  // ASB_AUTH_GUARD_GET
+  const authDenied = await requireApiPermission("templates.view");
+  if (authDenied) return authDenied;
   const [templateStore, quotationStore, workspace] = await Promise.all([
     readTemplateStore(),
     readQuotationStore(),
@@ -27,6 +31,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // ASB_AUTH_GUARD_POST
+  const authDenied = await requireApiPermission("templates.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
     const action = String(body?.action || "create");
@@ -67,6 +74,9 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  // ASB_AUTH_GUARD_PUT
+  const authDenied = await requireApiPermission("templates.manage");
+  if (authDenied) return authDenied;
   try {
     const body = await request.json();
 
@@ -88,6 +98,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  // ASB_AUTH_GUARD_DELETE
+  const authDenied = await requireApiPermission("templates.manage");
+  if (authDenied) return authDenied;
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");

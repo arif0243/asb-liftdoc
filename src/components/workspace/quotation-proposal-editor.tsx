@@ -2116,6 +2116,25 @@ export function QuotationProposalEditor() {
   };
 
   /* ASB_EDITABLE_PRICE_HELPERS_END */
+
+  const proposalPriceDisplayTotal = (
+    source: Quotation,
+  ) => {
+    const mergedAmount = Number(
+      proposal.priceMergedTotalAmount,
+    );
+
+    if (
+      proposal.priceMergeRateTotalRows &&
+      Number.isFinite(mergedAmount) &&
+      mergedAmount >= 0
+    ) {
+      return mergedAmount;
+    }
+
+    return source.grandTotal;
+  };
+
   const save = async () => {
     if (!quotationId) return;
 
@@ -3342,6 +3361,115 @@ export function QuotationProposalEditor() {
                     }
                   />
                 </label>
+                {/* ASB_PRICE_MERGE_OPTION_START */}
+
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={
+                      proposal.priceMergeRateTotalRows ??
+                      false
+                    }
+                    onChange={(event) =>
+                      setProposal(
+                        (current) => ({
+                          ...current,
+                          priceMergeRateTotalRows:
+                            event.target.checked,
+                        }),
+                      )
+                    }
+                  />
+                  <span>
+                    Merge all Rate and Total rows
+                  </span>
+                </label>
+
+                {proposal.priceMergeRateTotalRows ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "minmax(0, 1fr) minmax(0, 1fr)",
+                      gap: 10,
+                    }}
+                  >
+                    <label>
+                      <span>
+                        Merged Rate Text
+                      </span>
+                      <input
+                        value={
+                          proposal.priceMergedRateText ??
+                          "Package work"
+                        }
+                        onChange={(event) =>
+                          setProposal(
+                            (current) => ({
+                              ...current,
+                              priceMergedRateText:
+                                event.target.value,
+                            }),
+                          )
+                        }
+                        placeholder="Package work"
+                      />
+                    </label>
+
+                    <label>
+                      <span>
+                        Merged Total Amount
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={
+                          proposal.priceMergedTotalAmount ??
+                          ""
+                        }
+                        placeholder={String(
+                          quotation.grandTotal,
+                        )}
+                        onChange={(event) =>
+                          setProposal(
+                            (current) => ({
+                              ...current,
+                              priceMergedTotalAmount:
+                                event.target.value === ""
+                                  ? undefined
+                                  : Math.max(
+                                      0,
+                                      Number(
+                                        event.target
+                                          .value,
+                                      ) || 0,
+                                    ),
+                            }),
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+                ) : null}
+
+                <div className="asb-info">
+                  When enabled, all body rows
+                  under Rate and Total are merged.
+                  The Rate text is centered at
+                  the top and the merged Total
+                  amount can be edited here.
+                </div>
+
+                {/* ASB_PRICE_MERGE_OPTION_END */}
+
+
 
                 <div
                   style={{
@@ -3534,7 +3662,7 @@ export function QuotationProposalEditor() {
                     }}
                   >
                     Subtotal: BDT{" "}
-                    {quotation.subtotal.toLocaleString(
+                    {proposalPriceDisplayTotal(quotation).toLocaleString(
                       "en-BD",
                       {
                         maximumFractionDigits:
@@ -3543,7 +3671,7 @@ export function QuotationProposalEditor() {
                     )}
                     {" | "}
                     Grand Total: BDT{" "}
-                    {quotation.grandTotal.toLocaleString(
+                    {proposalPriceDisplayTotal(quotation).toLocaleString(
                       "en-BD",
                       {
                         maximumFractionDigits:

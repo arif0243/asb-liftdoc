@@ -63,3 +63,9 @@ next-env.d.ts
 
 /data/quotation-proposals.json
 
+/data/auth-users.json
+/data/auth-users.json.lock
+/data/auth-users.json.*.tmp
+*.bak
+Scripts/.deploy/
+Scripts/.tmp-*/

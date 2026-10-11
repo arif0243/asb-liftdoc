@@ -1,9 +1,13 @@
-﻿import { NextResponse } from "next/server";
+import { requireApiPermission } from "@/lib/auth/authz";
+import { NextResponse } from "next/server";
 import { searchWorkspace } from "@/lib/workspace-store";
 import { searchQuotations } from "@/lib/quotation-store";
 import { searchDocuments } from "@/lib/document-instance-store";
 
 export async function GET(request: Request) {
+  // ASB_AUTH_GUARD_GET
+  const authDenied = await requireApiPermission("search.view");
+  if (authDenied) return authDenied;
   const url = new URL(request.url);
   const query = url.searchParams.get("q") ?? "";
 
