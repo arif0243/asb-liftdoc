@@ -1,4 +1,4 @@
 ---
 deployment:
   tasks:
-    - /home/asbeelus/asb-liftdoc-deploy/scripts/deploy-release.sh
+    - /home/asbeelus/asb-liftdoc-deploy/scripts/sync-prebuilt.sh
