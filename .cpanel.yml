@@ -1,0 +1,4 @@
+---
+deployment:
+  tasks:
+    - /home/asbeelus/asb-liftdoc-deploy/scripts/deploy-release.sh
