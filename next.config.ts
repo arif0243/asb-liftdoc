@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  experimental: {
+    cpus: 1,
+  },
+
   typescript: {
     // TypeScript is validated locally before deployment.
     // cPanel skips the duplicate check to avoid host memory kills.
