@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  typescript: {
+    // TypeScript is validated locally before deployment.
+    // cPanel skips the duplicate check to avoid host memory kills.
+    ignoreBuildErrors: true,
+  },
+
   turbopack: {
     rules: {
       "*.css": {
