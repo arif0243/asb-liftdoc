@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+
   cacheComponents: true,
   partialPrefetching: true,
 
@@ -10,8 +12,7 @@ const nextConfig: NextConfig = {
   },
 
   typescript: {
-    // TypeScript is validated locally before deployment.
-    // cPanel skips the duplicate check to avoid host memory kills.
+    // TypeScript is validated separately before production packaging.
     ignoreBuildErrors: true,
   },
 
